@@ -1,0 +1,61 @@
+# Для разработки достаточно базы:      docker compose up -d db
+# Для запуска «как на сервере» (всё):  docker compose up -d --build
+# Перед этим скопируйте .env.example в .env и заполните значения.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vmeste
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vmeste}
+      POSTGRES_DB: vmeste
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432" # только с этого компьютера
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vmeste -d vmeste"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+psycopg://vmeste:${POSTGRES_PASSWORD:-vmeste}@db:5432/vmeste
+      SECRET_KEY: ${SECRET_KEY:?Задайте SECRET_KEY в файле .env}
+      AUTO_CREATE_TABLES: "false" # схему ведёт Alembic
+      MEDIA_DIR: /srv/media
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    volumes:
+      - media:/srv/media
+    expose:
+      - "8000" # наружу не публикуется: доступ только через caddy
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  media:
+  caddy_data:
+  caddy_config:

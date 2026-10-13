@@ -1,0 +1,6 @@
+# Caddy сам получает и продлевает HTTPS-сертификат для домена из переменной DOMAIN.
+# Для локальной проверки DOMAIN=localhost (сертификат выпускается локальный).
+{$DOMAIN:localhost} {
+	encode gzip
+	reverse_proxy api:8000
+}
