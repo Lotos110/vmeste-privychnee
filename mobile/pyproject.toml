@@ -1,0 +1,16 @@
+[project]
+name = "vmeste-privychnee"
+version = "0.1.0"
+description = "Вместе привычнее — мобильный клиент"
+requires-python = ">=3.10"
+dependencies = [
+    "flet==0.28.3",
+    "httpx>=0.27,<1",
+    "tzlocal>=5",
+]
+
+[tool.flet]
+product = "Вместе привычнее"
+org = "ru.vmesteprivychnee"
+company = "Вместе привычнее"
+copyright = "Вместе привычнее"
