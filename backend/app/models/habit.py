@@ -51,6 +51,8 @@ class Habit(Base):
     goal: Mapped[str | None] = mapped_column(String(120), nullable=True)
     schedule: Mapped[list[int]] = mapped_column(JSON, default=lambda: list(ALL_DAYS))
     remind_time: Mapped[time | None] = mapped_column(Time, nullable=True)  # местное время
+    icon: Mapped[str | None] = mapped_column(String(40), nullable=True)  # своя иконка Material
+    color: Mapped[str | None] = mapped_column(String(20), nullable=True)  # purple/green/orange/blue/red
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: timeutil.utcnow()
     )

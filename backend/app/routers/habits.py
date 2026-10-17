@@ -88,6 +88,8 @@ def create_habit(data: HabitCreate, user: CurrentUser, db: DB):
         goal=data.goal,
         schedule=data.schedule,
         remind_time=parse_time(data.remind_time),
+        icon=data.icon,
+        color=data.color,
     )
     db.add(habit)
     db.flush()
@@ -135,6 +137,10 @@ def update_habit(habit_id: int, data: HabitUpdate, user: CurrentUser, db: DB):
         habit.schedule = fields["schedule"]
     if "remind_time" in fields:
         habit.remind_time = parse_time(fields["remind_time"])
+    if "icon" in fields:
+        habit.icon = fields["icon"]
+    if "color" in fields:
+        habit.color = fields["color"]
     db.flush()
     refresh_member_cache(db, habit, member, user)
     db.commit()

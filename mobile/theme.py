@@ -50,6 +50,22 @@ CATEGORY_COLORS = {
 }
 DEFAULT_CATEGORY_COLORS = (PRIMARY_SOFT, PRIMARY)
 
+# цвет, который пользователь выбирает для своей привычки -> (фон иконки, цвет иконки)
+HABIT_COLORS = {
+    "purple": (PRIMARY_SOFT, PRIMARY),
+    "green": (GREEN_SOFT, GREEN),
+    "orange": (ORANGE_SOFT, ORANGE),
+    "blue": (BLUE_SOFT, BLUE),
+    "red": (RED_SOFT, RED),
+}
+
+# иконки на выбор для своей привычки (имена Material)
+HABIT_ICONS = [
+    "CHECK_CIRCLE_OUTLINE", "MENU_BOOK", "SCHOOL", "LANGUAGE", "CODE", "BRUSH",
+    "MUSIC_NOTE", "FITNESS_CENTER", "DIRECTIONS_RUN", "SELF_IMPROVEMENT", "WATER_DROP", "BEDTIME",
+    "RESTAURANT", "LOCAL_CAFE", "SPA", "PETS", "SAVINGS", "CLEANING_SERVICES",
+]  # fmt: skip
+
 CATEGORY_TITLES = {
     "sleep": "Сон",
     "nutrition": "Питание",

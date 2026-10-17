@@ -6,6 +6,8 @@ from pydantic import BaseModel, Field, field_validator
 from app.schemas.user import PersonOut
 
 TIME_PATTERN = r"^([01]\d|2[0-3]):[0-5]\d$"
+ICON_PATTERN = r"^[A-Z0-9_]{1,40}$"  # имя иконки Material, например MENU_BOOK
+HabitColor = Literal["purple", "green", "orange", "blue", "red"]  # цвет привычки, выбранный пользователем
 
 
 def _clean_schedule(value: list[int]) -> list[int]:
@@ -31,6 +33,8 @@ class HabitCreate(BaseModel):
     schedule: list[int] = Field(default_factory=lambda: [0, 1, 2, 3, 4, 5, 6])
     remind_time: str | None = Field(default=None, pattern=TIME_PATTERN)
     template_id: int | None = None
+    icon: str | None = Field(default=None, pattern=ICON_PATTERN)  # своя иконка (иначе — иконка шаблона)
+    color: HabitColor | None = None
     invite_friend_ids: list[int] = Field(default_factory=list, max_length=10)
 
     @field_validator("title")
@@ -57,6 +61,8 @@ class HabitUpdate(BaseModel):
     goal: str | None = Field(default=None, max_length=120)
     schedule: list[int] | None = None
     remind_time: str | None = Field(default=None, pattern=TIME_PATTERN)
+    icon: str | None = Field(default=None, pattern=ICON_PATTERN)  # null сбрасывает на иконку шаблона
+    color: HabitColor | None = None
 
     @field_validator("title")
     @classmethod
@@ -102,6 +108,7 @@ class HabitOut(BaseModel):
     remind_time: str | None = None
     template_id: int | None = None
     icon: str | None = None
+    color: str | None = None  # свой цвет; пусто — цвет берётся по категории шаблона
     category: str | None = None
     created_by: int
     today: date  # «сегодня» в часовом поясе того, кто смотрит

@@ -6,7 +6,8 @@ import flet as ft
 
 import theme
 from components import common as ui
-from components.habit_card import category_colors, partners_of, streak_text
+from components.habit_card import habit_colors, partners_of, streak_text
+from components.icon_picker import IconPicker
 from components.schedule import ScheduleSelector, normalize_time, schedule_label
 from core import Screen
 
@@ -62,7 +63,7 @@ class HabitScreen(Screen):
         return controls
 
     def _header(self, habit: dict) -> ft.Control:
-        bg, fg = category_colors(habit.get("category"))
+        bg, fg = habit_colors(habit)
         details = [schedule_label(habit["schedule"])]
         if habit.get("remind_time"):
             details.append(f"напоминание в {habit['remind_time']}")
@@ -339,6 +340,7 @@ class HabitScreen(Screen):
         goal = ui.field("Цель", habit.get("goal") or "", max_length=120)
         schedule = ScheduleSelector(habit["schedule"])
         remind = ui.field("Напоминание (ЧЧ:ММ)", habit.get("remind_time") or "")
+        picker = IconPicker(habit.get("icon"), habit.get("color"))
 
         def save():
             try:
@@ -355,13 +357,18 @@ class HabitScreen(Screen):
                     "goal": (goal.value or "").strip() or None,
                     "schedule": schedule.value,
                     "remind_time": remind_time,
+                    **picker.changes,
                 },
             )
             self.refresh()
 
         self.app.dialog(
             "Редактировать привычку",
-            ft.Column([title, goal, schedule.row, remind], tight=True, spacing=12, scroll=ft.ScrollMode.AUTO),
+            ft.Column(
+                [title, goal, ui.txt("Иконка и цвет", 14, ui.W_SEMI), ft.Container(picker.control, width=300),
+                 schedule.row, remind],
+                tight=True, spacing=12, scroll=ft.ScrollMode.AUTO,
+            ),
             [("Отмена", None), ("Сохранить", save)],
         )
 

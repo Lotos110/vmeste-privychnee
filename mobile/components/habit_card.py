@@ -12,6 +12,12 @@ def category_colors(category: str | None) -> tuple[str, str]:
     return theme.CATEGORY_COLORS.get(category or "", theme.DEFAULT_CATEGORY_COLORS)
 
 
+def habit_colors(habit: dict) -> tuple[str, str]:
+    """Цвета иконки привычки: выбранные пользователем, иначе по категории шаблона."""
+    chosen = theme.HABIT_COLORS.get(habit.get("color") or "")
+    return chosen or category_colors(habit.get("category"))
+
+
 def partners_of(habit: dict) -> list[dict]:
     return [m for m in habit["members"] if not m["is_me"] and m["status"] == "active"]
 
@@ -80,7 +86,7 @@ def week_strip(days: list[dict], today: str | None) -> ft.Row:
 
 def habit_card(app, habit: dict, on_open, on_toggle, pop=False) -> tuple[ft.Container, ft.Container]:
     """Возвращает (карточку, кнопку-отметку): кнопка нужна экрану для анимации «выпрыгивания»."""
-    bg, fg = category_colors(habit.get("category"))
+    bg, fg = habit_colors(habit)
     partners = partners_of(habit)
     if partners:
         subtitle = "Вместе с: " + ", ".join(p["name"] for p in partners)

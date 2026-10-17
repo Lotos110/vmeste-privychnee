@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.admin import setup_admin
 from app.config import get_settings
-from app.db import Base, SessionLocal, engine
+from app.db import Base, SessionLocal, add_missing_columns, engine
 from app.routers import articles, auth, friends, habits, legal, me, sos, stats
 from app.scheduler import start_scheduler
 from app.seed import seed_content
@@ -27,6 +27,11 @@ async def lifespan(_app: FastAPI):
     settings = get_settings()
     if settings.auto_create_tables:
         Base.metadata.create_all(engine)
+        try:  # база осталась от прошлой версии: дописываем новые необязательные колонки
+            for name in add_missing_columns(engine):
+                log.info("В базу добавлена колонка %s", name)
+        except Exception:
+            log.exception("Не удалось дописать новые колонки в базу. Для PostgreSQL: alembic upgrade head")
     try:
         with SessionLocal() as db:
             seed_content(db)

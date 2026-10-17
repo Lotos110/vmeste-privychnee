@@ -5,6 +5,7 @@ import flet as ft
 import theme
 from components import common as ui
 from components.habit_card import category_colors
+from components.icon_picker import IconPicker
 from components.schedule import ScheduleSelector, normalize_time
 from core import Screen
 
@@ -120,13 +121,17 @@ class CreateDetailsScreen(Screen):
         self.schedule = ScheduleSelector(template.get("default_schedule"))
         self.time_field = ui.field("Напоминание (ЧЧ:ММ)", template.get("default_time") or "",
                                    prefix="ALARM", hint="18:00, можно оставить пустым")
+        # у шаблона свой облик; у своей привычки иконку и цвет выбирает пользователь
+        self.picker = None if template else IconPicker(theme.HABIT_ICONS[0], "purple")
 
     def body(self):
         friends = self.app.api.get("/friends")["friends"]
         self.friend_boxes = [(f, ft.Checkbox(label=f["name"], value=False)) for f in friends]
 
-        controls: list[ft.Control] = [
-            self.title_field,
+        controls: list[ft.Control] = [self.title_field]
+        if self.picker:
+            controls += [ui.txt("Иконка и цвет", 15, ui.W_SEMI), self.picker.control]
+        controls += [
             self.goal_field,
             ui.txt("Дни недели", 15, ui.W_SEMI),
             self.schedule.row,
@@ -165,6 +170,9 @@ class CreateDetailsScreen(Screen):
             "template_id": self.template["id"] if self.template else None,
             "invite_friend_ids": [f["id"] for f, box in self.friend_boxes if box.value],
         }
+        if self.picker:
+            payload["icon"] = self.picker.icon
+            payload["color"] = self.picker.color
         self.sending = True
         try:
             self.app.api.post("/habits", payload)

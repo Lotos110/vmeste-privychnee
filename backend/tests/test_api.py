@@ -354,3 +354,19 @@ def test_service_pages(client):
     assert client.get("/health").json() == {"status": "ok"}
     assert client.get("/legal/terms").status_code == 200
     assert client.get("/docs").status_code == 200
+
+
+def test_custom_habit_icon_and_color(register):
+    anna = register("anna@example.com")
+    habit = new_habit(anna, title="Учить английский", icon="SCHOOL", color="blue")
+    assert habit["icon"] == "SCHOOL" and habit["color"] == "blue"
+
+    changed = anna.patch(f"/habits/{habit['id']}", {"icon": "MENU_BOOK", "color": "green"})
+    assert changed.status_code == 200
+    assert changed.json()["icon"] == "MENU_BOOK" and changed.json()["color"] == "green"
+
+    cleared = anna.patch(f"/habits/{habit['id']}", {"icon": None, "color": None})
+    assert cleared.json()["icon"] is None and cleared.json()["color"] is None
+
+    assert anna.post("/habits", {"title": "Х", "color": "pink"}).status_code == 422
+    assert anna.post("/habits", {"title": "Х", "icon": "bad icon!"}).status_code == 422
