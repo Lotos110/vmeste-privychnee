@@ -199,7 +199,7 @@ class HabitScreen(Screen):
                         bgcolor=bg,
                         border=ft.border.all(1.5, theme.PRIMARY) if is_today and bg is None else None,
                         alignment=ft.alignment.center,
-                        content=ft.Text(str(number), size=13, color=color, weight=ui.W_SEMI if bg else None),
+                        content=ui.txt(str(number), 13, ui.W_SEMI if bg else None, color),
                     ),
                 )
             )

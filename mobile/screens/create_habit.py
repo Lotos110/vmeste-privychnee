@@ -76,8 +76,8 @@ class TemplatePickerScreen(Screen):
             content=ft.Column(
                 [
                     ui.circle_icon(template["icon"], bg, fg, 48),
-                    ft.Text(template["title"], size=12, color=theme.TEXT, text_align=ft.TextAlign.CENTER,
-                            max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
+                    ui.txt(template["title"], 12, text_align=ft.TextAlign.CENTER,
+                           max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=6,

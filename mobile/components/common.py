@@ -30,8 +30,27 @@ def days_text(n: int) -> str:
     return f"{n} {plural(n, ('день', 'дня', 'дней'))}"
 
 
-def txt(value, size=14, weight=None, color=theme.TEXT, **kwargs) -> ft.Text:
-    return ft.Text(value, size=size, weight=weight, color=color, **kwargs)
+_BOLD_WEIGHTS = (ft.FontWeight.W_600, ft.FontWeight.W_700, ft.FontWeight.BOLD, ft.FontWeight.W_800,
+                 ft.FontWeight.W_900)
+
+
+def font_for(weight=None, size=14, heading: bool | None = None) -> tuple[str, ft.FontWeight | None]:
+    """Подбирает шрифт под вес и размер: (семейство, вес для Flet).
+
+    Жирный текст от 15 пунктов (заголовки, названия, кнопки) идёт Comfortaa, мелкий жирный и
+    обычный текст — Nunito. heading=True/False принудительно выбирает Comfortaa/Nunito.
+    Вес возвращается пустым: жирность уже «зашита» в файл начертания, и Flutter не дорисовывает её.
+    """
+    bold = weight in _BOLD_WEIGHTS
+    use_heading = heading if heading is not None else (bold and size >= 15)
+    if use_heading:
+        return (theme.FONT_HEAD_BOLD if bold else theme.FONT_HEAD), None
+    return (theme.FONT_BODY_BOLD if bold else theme.FONT_BODY), None
+
+
+def txt(value, size=14, weight=None, color=theme.TEXT, heading: bool | None = None, **kwargs) -> ft.Text:
+    family, weight = font_for(weight, size, heading)
+    return ft.Text(value, size=size, weight=weight, color=color, font_family=family, **kwargs)
 
 
 def title(value: str, size=24) -> ft.Text:
@@ -57,7 +76,7 @@ def card(content, padding=16, on_click=None, bgcolor=theme.CARD, radius=20, **kw
 
 def _button(label, on_click, bgcolor, color, side=None, height=52) -> ft.Row:
     button = ft.ElevatedButton(
-        content=ft.Text(label, size=15, weight=W_SEMI),
+        content=txt(label, 15, W_SEMI, color),
         on_click=on_click,
         height=height,
         expand=True,
@@ -90,7 +109,7 @@ def danger_button(label, on_click) -> ft.Row:
 
 def small_button(label, on_click, filled=True, color=theme.PRIMARY) -> ft.ElevatedButton:
     return ft.ElevatedButton(
-        content=ft.Text(label, size=13, weight=W_SEMI),
+        content=txt(label, 13, W_SEMI, theme.WHITE if filled else color),
         on_click=on_click,
         height=36,
         style=ft.ButtonStyle(
@@ -105,7 +124,7 @@ def small_button(label, on_click, filled=True, color=theme.PRIMARY) -> ft.Elevat
 
 def link(label, on_click, color=theme.PRIMARY, size=14) -> ft.Container:
     return ft.Container(
-        content=ft.Text(label, size=size, weight=W_SEMI, color=color),
+        content=txt(label, size, W_SEMI, color),
         on_click=on_click,
         padding=ft.padding.symmetric(horizontal=4, vertical=4),
     )
@@ -121,8 +140,10 @@ def field(
     hint=None,
     max_length=None,
     on_submit=None,
+    **extra,
 ) -> ft.TextField:
-    kwargs = {}
+    """Поле ввода. Всё, что не покрыто параметрами (on_change, input_filter, suffix...), идёт в extra."""
+    kwargs = dict(extra)
     if keyboard is not None:
         kwargs["keyboard_type"] = keyboard
     if prefix:
@@ -180,7 +201,7 @@ def circle_icon(name: str, bg: str, fg: str, size=48) -> ft.Container:
 def avatar(app, name: str, url: str | None, radius=24) -> ft.Container:
     size = radius * 2
     initial = (name or "?")[:1].upper()
-    content = ft.Text(initial, size=radius * 0.8, weight=W_BOLD, color=theme.PRIMARY)
+    content = txt(initial, radius * 0.8, W_BOLD, theme.PRIMARY, heading=True)
     image_url = app.api.media_url(url)
     if image_url:
         content = ft.Image(src=image_url, width=size, height=size, fit=ft.ImageFit.COVER)
@@ -197,9 +218,7 @@ def avatar(app, name: str, url: str | None, radius=24) -> ft.Container:
 
 def chip(label, selected, on_click) -> ft.Container:
     return ft.Container(
-        content=ft.Text(
-            label, size=13, weight=W_SEMI, color=theme.WHITE if selected else theme.TEXT
-        ),
+        content=txt(label, 13, W_SEMI, theme.WHITE if selected else theme.TEXT),
         padding=ft.padding.symmetric(horizontal=14, vertical=8),
         border_radius=20,
         bgcolor=theme.PRIMARY if selected else theme.CARD,
@@ -220,12 +239,7 @@ def segmented(labels: list[str], selected: int, on_select) -> ft.Container:
                 padding=ft.padding.symmetric(vertical=10),
                 border_radius=12,
                 bgcolor=theme.CARD if active else None,
-                content=ft.Text(
-                    label,
-                    size=13,
-                    weight=W_SEMI,
-                    color=theme.PRIMARY if active else theme.MUTED,
-                ),
+                content=txt(label, 13, W_SEMI, theme.PRIMARY if active else theme.MUTED),
                 on_click=lambda e, i=index: on_select(i),
             )
         )
@@ -286,9 +300,45 @@ def spacer(height=8) -> ft.Container:
 
 def centered_text(value, size=14, weight=None, color=theme.TEXT, **kwargs) -> ft.Row:
     return ft.Row(
-        [ft.Text(value, size=size, weight=weight, color=color, expand=True,
-                 text_align=ft.TextAlign.CENTER, **kwargs)]
+        [txt(value, size, weight, color, expand=True, text_align=ft.TextAlign.CENTER, **kwargs)]
     )
+
+
+def logo_mark(size=44) -> ft.Image:
+    """Знак логотипа (двое и сердце с галочкой) на прозрачном фоне."""
+    return ft.Image(src="images/logo_mark.png", width=size, height=size, fit=ft.ImageFit.CONTAIN)
+
+
+def logo_tile(size=112) -> ft.Image:
+    """Знак на скруглённой плитке: для экрана приветствия."""
+    return ft.Image(src="images/logo_tile.png", width=size, height=size, fit=ft.ImageFit.CONTAIN)
+
+
+def wordmark(size=18) -> ft.Text:
+    """Надпись «Вместе привычнее» в двух цветах, как на логотипе."""
+    return ft.Text(
+        spans=[
+            ft.TextSpan("Вместе ", ft.TextStyle(color=theme.TEXT)),
+            ft.TextSpan("привычнее", ft.TextStyle(color=theme.PRIMARY)),
+        ],
+        size=size,
+        font_family=theme.FONT_HEAD_BOLD,
+        max_lines=1,
+        overflow=ft.TextOverflow.ELLIPSIS,
+    )
+
+
+def greeting(name: str, hour: int) -> str:
+    """«Доброе утро, Милана» по местному времени устройства."""
+    if 5 <= hour < 12:
+        hello = "Доброе утро"
+    elif 12 <= hour < 18:
+        hello = "Добрый день"
+    elif 18 <= hour < 23:
+        hello = "Добрый вечер"
+    else:
+        hello = "Доброй ночи"
+    return f"{hello}, {name}" if name else hello
 
 
 def format_code(code: str) -> str:

@@ -19,8 +19,8 @@ def article_card(article: dict, on_click) -> ft.Container:
                 ui.circle_icon(icon_name, bg, fg, 64),
                 ft.Column(
                     [
-                        ft.Text(article["title"], size=15, weight=ui.W_BOLD, color=theme.TEXT, max_lines=2,
-                                overflow=ft.TextOverflow.ELLIPSIS),
+                        ui.txt(article["title"], 15, ui.W_BOLD, max_lines=2,
+                               overflow=ft.TextOverflow.ELLIPSIS),
                         ui.muted(article["summary"], 12, max_lines=2, overflow=ft.TextOverflow.ELLIPSIS),
                         ui.muted(f"{theme.CATEGORY_TITLES.get(article['category'], '')} · {article['reading_minutes']} мин", 11),
                     ],

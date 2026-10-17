@@ -68,7 +68,7 @@ class Screen:
         if self.tab_index is not None or not self.show_appbar:
             return None
         return ft.AppBar(
-            title=ft.Text(self.title, size=18, weight=ft.FontWeight.W_600, color=theme.TEXT),
+            title=ui.txt(self.title, 18, ui.W_SEMI),
             center_title=True,
             bgcolor=theme.BG,
             elevation=0,
@@ -133,7 +133,13 @@ class App:
         page.bgcolor = theme.BG
         page.padding = 0
         page.theme_mode = ft.ThemeMode.LIGHT
-        page.theme = ft.Theme(color_scheme_seed=theme.PRIMARY)
+        page.fonts = dict(theme.FONT_FILES)
+        page.theme = ft.Theme(color_scheme_seed=theme.PRIMARY, font_family=theme.FONT_BODY)
+        # русская локаль: календарь, системные подписи и клавиатура по-русски
+        page.locale_configuration = ft.LocaleConfiguration(
+            supported_locales=[ft.Locale("ru", "RU")],
+            current_locale=ft.Locale("ru", "RU"),
+        )
         try:  # размер окна важен только для запуска на компьютере
             page.window.width = 390
             page.window.height = 800
@@ -244,7 +250,7 @@ class App:
     def toast(self, message: str, error: bool = False) -> None:
         self.page.open(
             ft.SnackBar(
-                content=ft.Text(message, color=theme.WHITE),
+                content=ui.txt(message, 14, color=theme.WHITE),
                 bgcolor=theme.RED if error else theme.TEXT,
             )
         )
@@ -260,7 +266,7 @@ class App:
 
     def dialog(self, title: str, content: ft.Control | None, actions: list[tuple[str, object]]):
         """actions: [(подпись, функция)]. Диалог закрывается перед вызовом функции."""
-        dlg = ft.AlertDialog(modal=True, title=ft.Text(title, weight=ft.FontWeight.BOLD), content=content)
+        dlg = ft.AlertDialog(modal=True, title=ui.txt(title, 18, ui.W_BOLD), content=content)
 
         def wrap(fn):
             def handler(e):

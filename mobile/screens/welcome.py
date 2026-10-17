@@ -11,17 +11,8 @@ from core import Screen
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
-def logo(size=96) -> ft.Container:
-    return ft.Container(
-        width=size,
-        height=size,
-        border_radius=size * 0.33,
-        alignment=ft.alignment.center,
-        gradient=ft.LinearGradient(
-            begin=ft.alignment.top_left, end=ft.alignment.bottom_right, colors=theme.PRIMARY_GRADIENT
-        ),
-        content=ft.Icon(ui.icon("FAVORITE"), color=theme.WHITE, size=size * 0.5),
-    )
+def logo(size=120) -> ft.Image:
+    return ui.logo_tile(size)
 
 
 def legal_text(app) -> ft.Text:
@@ -30,6 +21,7 @@ def legal_text(app) -> ft.Text:
     return ft.Text(
         value="Продолжая, вы соглашаетесь с ",
         size=12,
+        font_family=theme.FONT_BODY,
         color=theme.MUTED,
         text_align=ft.TextAlign.CENTER,
         spans=[
