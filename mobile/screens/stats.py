@@ -113,7 +113,7 @@ class StatsScreen(Screen):
         if articles:
             controls.append(ui.section_header("Полезные статьи", "Все", lambda e: app.push(ArticlesScreen(app, as_page=True))))
             for article in articles:
-                controls.append(article_card(article, lambda e, a=article: app.push(ArticleScreen(app, a["id"]))))
+                controls.append(article_card(app, article, lambda e, a=article: app.push(ArticleScreen(app, a["id"]))))
         controls.append(
             ui.card(
                 ft.Row(
