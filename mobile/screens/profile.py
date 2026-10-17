@@ -1,11 +1,12 @@
 """Профиль и редактирование профиля."""
 
-from datetime import date, datetime
+from datetime import datetime
 
 import flet as ft
 
 import theme
 from components import common as ui
+from components.date_input import DateInput
 from core import Screen
 
 
@@ -99,14 +100,14 @@ class EditProfileScreen(Screen):
     def __init__(self, app, me: dict):
         self.me = me
         super().__init__(app)
-        birth = ""
+        birth = None
         if me.get("birth_date"):
-            birth = datetime.strptime(me["birth_date"], "%Y-%m-%d").strftime("%d.%m.%Y")
+            birth = datetime.strptime(me["birth_date"], "%Y-%m-%d").date()
         self.gender = me.get("gender")
         self.name = ui.field("Имя", me["name"], max_length=60)
         self.last_name = ui.field("Фамилия", me.get("last_name") or "", max_length=60)
         self.bio = ui.field("О себе", me.get("bio") or "", multiline=True, max_length=300)
-        self.birth = ui.field("Дата рождения (ДД.ММ.ГГГГ)", birth, prefix="CALENDAR_MONTH", hint="12.05.2000")
+        self.birth = DateInput(app, "Дата рождения", birth)
         self.avatar_holder = ft.Container(content=ui.avatar(app, me["name"], me.get("avatar_url"), 48))
         self.gender_row = ft.Row(spacing=10)
         self.picker = ft.FilePicker(on_result=self.on_picked)
@@ -144,7 +145,7 @@ class EditProfileScreen(Screen):
             self.name,
             self.last_name,
             self.bio,
-            self.birth,
+            self.birth.field,
             ui.txt("Пол", 14, ui.W_SEMI),
             self.gender_row,
             ui.spacer(4),
@@ -194,16 +195,11 @@ class EditProfileScreen(Screen):
         name = (self.name.value or "").strip()
         if not name:
             return self.app.toast("Имя не может быть пустым", error=True)
-        birth_iso = None
-        raw_birth = (self.birth.value or "").strip()
-        if raw_birth:
-            try:
-                parsed = datetime.strptime(raw_birth, "%d.%m.%Y").date()
-            except ValueError:
-                return self.app.toast("Дата рождения: ДД.ММ.ГГГГ, например 12.05.2000", error=True)
-            if parsed > date.today():
-                return self.app.toast("Дата рождения не может быть в будущем", error=True)
-            birth_iso = parsed.isoformat()
+        try:
+            parsed = self.birth.parse()
+        except ValueError as err:
+            return self.app.toast(str(err), error=True)
+        birth_iso = parsed.isoformat() if parsed else None
         self.app.me = self.app.api.patch(
             "/me",
             {
