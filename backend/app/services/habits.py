@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models import CheckIn, Habit, HabitMember, HabitTemplate, User
-from app.schemas.habit import HabitOut, MemberOut
+from app.schemas.habit import HabitOut, MemberOut, WeekDayOut
 from app.services import timeutil
 from app.services.people import avatar_url
 from app.services.streaks import compute_streaks, shared_streak, today_status
@@ -93,6 +93,7 @@ def serialize_habits(
         active_starts: list[date] = []
         mine: MemberOut | None = None
         mine_done: set[date] = set()
+        mine_missed: set[date] = set()
         mine_start = viewer_today
 
         for member in sorted(members_by_habit[habit.id], key=lambda m: m.user_id):
@@ -116,7 +117,7 @@ def serialize_habits(
                 active_missed.append(missed)
                 active_starts.append(start)
                 if user.id == viewer.id:
-                    mine_done, mine_start = done, start
+                    mine_done, mine_missed, mine_start = done, missed, start
             member_items.append(item)
             if user.id == viewer.id:
                 mine = item
@@ -140,6 +141,19 @@ def serialize_habits(
                     week_done += 1
             day += timedelta(days=1)
 
+        week_days: list[WeekDayOut] = []
+        for back in range(6, -1, -1):
+            day = viewer_today - timedelta(days=back)
+            if day in mine_done:
+                day_status = "done"
+            elif day in mine_missed:
+                day_status = "missed"
+            elif day < mine_start or day.weekday() not in schedule:
+                day_status = "off"
+            else:
+                day_status = "none"
+            week_days.append(WeekDayOut(date=day, weekday=day.weekday(), status=day_status))
+
         template = templates.get(habit.template_id) if habit.template_id else None
         result.append(
             HabitOut(
@@ -160,6 +174,7 @@ def serialize_habits(
                 shared_streak=shared,
                 week_done=week_done,
                 week_planned=week_planned,
+                week_days=week_days,
                 members=member_items,
             )
         )

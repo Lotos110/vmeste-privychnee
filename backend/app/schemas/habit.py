@@ -85,6 +85,15 @@ class MemberOut(BaseModel):
     today_status: Literal["done", "missed", "pending", "off"] = "off"
 
 
+class WeekDayOut(BaseModel):
+    """Один из последних 7 дней привычки глазами того, кто смотрит."""
+
+    date: date
+    weekday: int  # 0 — понедельник ... 6 — воскресенье
+    # done — выполнено, missed — срыв, none — по расписанию, но отметки нет, off — не по расписанию
+    status: Literal["done", "missed", "none", "off"]
+
+
 class HabitOut(BaseModel):
     id: int
     title: str
@@ -103,6 +112,7 @@ class HabitOut(BaseModel):
     shared_streak: int | None = None  # только если активных участников двое и больше
     week_done: int = 0  # за последние 7 дней
     week_planned: int = 0
+    week_days: list[WeekDayOut] = []  # последние 7 дней по возрастанию, последний — «сегодня»
     members: list[MemberOut]
 
 

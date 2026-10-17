@@ -170,6 +170,23 @@ def test_habit_streak_grows_and_resets(register, freeze):
     assert habit_now["current_streak"] == 0 and habit_now["best_streak"] == 3
 
 
+def test_habit_week_days_for_home_card(register, freeze):
+    anna = register("anna@example.com")
+    freeze(D)  # среда; привычка по будням, создана сегодня
+    habit = new_habit(anna, schedule=[0, 1, 2, 3, 4])
+    url = f"/habits/{habit['id']}/check-ins"
+    assert anna.post(url, {"status": "done"}).status_code == 200
+    freeze(D + timedelta(days=2))  # пятница: срыв, четверг остался без отметки
+    assert anna.post(url, {"status": "missed"}).status_code == 200
+    freeze(D + timedelta(days=3))  # суббота: не по расписанию
+
+    days = anna.get("/habits").json()[0]["week_days"]
+    assert [d["date"] for d in days] == [f"2026-10-{n:02d}" for n in range(4, 11)]
+    assert [d["weekday"] for d in days] == [6, 0, 1, 2, 3, 4, 5]
+    # до создания привычки и в нерабочие дни — off; среда выполнена, четверг пропущен без отметки, пятница — срыв
+    assert [d["status"] for d in days] == ["off", "off", "off", "done", "none", "missed", "off"]
+
+
 def test_check_in_validation_undo_and_miss_reason(register, freeze):
     anna = register("anna@example.com")
     freeze(D)
