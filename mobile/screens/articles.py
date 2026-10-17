@@ -113,18 +113,18 @@ class ArticlesScreen(Screen):
 
 
 def markdown_style() -> ft.MarkdownStyleSheet:
-    """Оформление текста статьи: Comfortaa в заголовках, Nunito в тексте, цитаты как выноски."""
+    """Оформление текста статьи: Rubik: жирный в заголовках, обычный в тексте, цитаты как выноски."""
 
     def style(size, family, color=theme.TEXT, height=1.5):
         return ft.TextStyle(size=size, font_family=family, color=color, height=height)
 
     return ft.MarkdownStyleSheet(
         p_text_style=style(15, theme.FONT_BODY),
-        h1_text_style=style(24, theme.FONT_HEAD_BOLD, height=1.3),
-        h2_text_style=style(20, theme.FONT_HEAD_BOLD, height=1.3),
-        h3_text_style=style(17, theme.FONT_HEAD_BOLD, height=1.3),
-        strong_text_style=style(15, theme.FONT_BODY_BOLD),
-        a_text_style=style(15, theme.FONT_BODY_BOLD, theme.PRIMARY),
+        h1_text_style=style(24, theme.FONT_BOLD, height=1.3),
+        h2_text_style=style(20, theme.FONT_BOLD, height=1.3),
+        h3_text_style=style(17, theme.FONT_BOLD, height=1.3),
+        strong_text_style=style(15, theme.FONT_SEMI),
+        a_text_style=style(15, theme.FONT_SEMI, theme.PRIMARY),
         list_bullet_text_style=style(15, theme.FONT_BODY),
         blockquote_text_style=style(14, theme.FONT_BODY),
         blockquote_padding=ft.padding.all(14),

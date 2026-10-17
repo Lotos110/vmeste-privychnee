@@ -30,26 +30,24 @@ def days_text(n: int) -> str:
     return f"{n} {plural(n, ('день', 'дня', 'дней'))}"
 
 
-_BOLD_WEIGHTS = (ft.FontWeight.W_600, ft.FontWeight.W_700, ft.FontWeight.BOLD, ft.FontWeight.W_800,
-                 ft.FontWeight.W_900)
+_SEMI_WEIGHTS = (ft.FontWeight.W_500, ft.FontWeight.W_600)
+_BOLD_WEIGHTS = (ft.FontWeight.W_700, ft.FontWeight.BOLD, ft.FontWeight.W_800, ft.FontWeight.W_900)
 
 
-def font_for(weight=None, size=14, heading: bool | None = None) -> tuple[str, ft.FontWeight | None]:
-    """Подбирает шрифт под вес и размер: (семейство, вес для Flet).
+def font_for(weight=None) -> tuple[str, ft.FontWeight | None]:
+    """Подбирает начертание Rubik по весу: (семейство, вес для Flet).
 
-    Жирный текст от 15 пунктов (заголовки, названия, кнопки) идёт Comfortaa, мелкий жирный и
-    обычный текст — Nunito. heading=True/False принудительно выбирает Comfortaa/Nunito.
     Вес возвращается пустым: жирность уже «зашита» в файл начертания, и Flutter не дорисовывает её.
     """
-    bold = weight in _BOLD_WEIGHTS
-    use_heading = heading if heading is not None else (bold and size >= 15)
-    if use_heading:
-        return (theme.FONT_HEAD_BOLD if bold else theme.FONT_HEAD), None
-    return (theme.FONT_BODY_BOLD if bold else theme.FONT_BODY), None
+    if weight in _BOLD_WEIGHTS:
+        return theme.FONT_BOLD, None
+    if weight in _SEMI_WEIGHTS:
+        return theme.FONT_SEMI, None
+    return theme.FONT_BODY, None
 
 
-def txt(value, size=14, weight=None, color=theme.TEXT, heading: bool | None = None, **kwargs) -> ft.Text:
-    family, weight = font_for(weight, size, heading)
+def txt(value, size=14, weight=None, color=theme.TEXT, **kwargs) -> ft.Text:
+    family, weight = font_for(weight)
     return ft.Text(value, size=size, weight=weight, color=color, font_family=family, **kwargs)
 
 
@@ -201,7 +199,7 @@ def circle_icon(name: str, bg: str, fg: str, size=48) -> ft.Container:
 def avatar(app, name: str, url: str | None, radius=24) -> ft.Container:
     size = radius * 2
     initial = (name or "?")[:1].upper()
-    content = txt(initial, radius * 0.8, W_BOLD, theme.PRIMARY, heading=True)
+    content = txt(initial, radius * 0.8, W_BOLD, theme.PRIMARY)
     image_url = app.api.media_url(url)
     if image_url:
         content = ft.Image(src=image_url, width=size, height=size, fit=ft.ImageFit.COVER)
@@ -322,7 +320,7 @@ def wordmark(size=18) -> ft.Text:
             ft.TextSpan("привычнее", ft.TextStyle(color=theme.PRIMARY)),
         ],
         size=size,
-        font_family=theme.FONT_HEAD_BOLD,
+        font_family=theme.FONT_BOLD,
         max_lines=1,
         overflow=ft.TextOverflow.ELLIPSIS,
     )

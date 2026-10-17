@@ -1,17 +1,15 @@
 """Цвета и размеры из макетов: фиолетовый и зелёный на светлом фоне."""
 
-# Шрифты (файлы лежат в assets/fonts, лицензия OFL). Сочетание: заголовки, кнопки и цифры
-# набираются Comfortaa, основной текст — Nunito (он тоже округлый, но легче читается мелким).
-# Каждое начертание — отдельное «семейство»: так Flet надёжно подбирает нужный файл.
-FONT_BODY = "Nunito"
-FONT_BODY_BOLD = "Nunito Bold"
-FONT_HEAD = "Comfortaa"
-FONT_HEAD_BOLD = "Comfortaa Bold"
+# Шрифт Rubik (файлы в assets/fonts, лицензия OFL): мягкие скруглённые углы под стать логотипу,
+# хорошая кириллица. Каждое начертание подключено отдельным «семейством»: так Flet надёжно
+# подбирает нужный файл. Чтобы сменить шрифт, замените файлы и имена в FONT_FILES.
+FONT_BODY = "Rubik"
+FONT_SEMI = "Rubik SemiBold"
+FONT_BOLD = "Rubik Bold"
 FONT_FILES = {
-    FONT_BODY: "fonts/Nunito-Regular.ttf",
-    FONT_BODY_BOLD: "fonts/Nunito-Bold.ttf",
-    FONT_HEAD: "fonts/Comfortaa-Regular.ttf",
-    FONT_HEAD_BOLD: "fonts/Comfortaa-Bold.ttf",
+    FONT_BODY: "fonts/Rubik-Regular.ttf",
+    FONT_SEMI: "fonts/Rubik-SemiBold.ttf",
+    FONT_BOLD: "fonts/Rubik-Bold.ttf",
 }
 
 PRIMARY = "#6C5CE7"
