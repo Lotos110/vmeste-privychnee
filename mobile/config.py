@@ -14,5 +14,5 @@
 
 import os
 
-DEFAULT_API_URL = os.getenv("VMESTE_API_URL", "http://127.0.0.1:8000")
-REQUEST_TIMEOUT = 15  # секунд
+DEFAULT_API_URL = os.getenv("VMESTE_API_URL", "https://vmeste-privychnee.onrender.com")
+REQUEST_TIMEOUT = 60
