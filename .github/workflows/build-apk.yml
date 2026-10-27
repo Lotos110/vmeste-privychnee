@@ -1,0 +1,44 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ui-refresh]
+    paths:
+      - "mobile/**"
+      - ".github/workflows/build-apk.yml"
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      PYTHONUTF8: "1"
+      FLET_CLI_NO_RICH_OUTPUT: "1"
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v6
+
+      - name: Install Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Flet and app dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Show Flet version
+        run: flet --version
+
+      - name: Build APK
+        run: flet build apk --build-number ${{ github.run_number }} --skip-flutter-doctor --verbose
+
+      - name: Save APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: vmeste-privychnee-apk
+          path: mobile/build/apk/*.apk
+          if-no-files-found: error
+          retention-days: 30
