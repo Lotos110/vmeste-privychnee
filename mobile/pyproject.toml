@@ -14,3 +14,5 @@ product = "Вместе привычнее"
 org = "ru.vmesteprivychnee"
 company = "Вместе привычнее"
 copyright = "Вместе привычнее"
+[tool.flet.android]
+adaptive_icon_background = "#E9EDFF"
