@@ -312,6 +312,24 @@ def logo_tile(size=112) -> ft.Image:
     return ft.Image(src="images/logo_tile.png", width=size, height=size, fit=ft.ImageFit.CONTAIN)
 
 
+ILLUSTRATIONS = "images/illustrations/"
+
+
+def illustration(name: str, size=88) -> ft.Image:
+    """Квадратная иллюстрация из assets/images/illustrations (рисунки лежат в mobile/tools/art)."""
+    return ft.Image(src=f"{ILLUSTRATIONS}{name}.png", width=size, height=size, fit=ft.ImageFit.CONTAIN)
+
+
+def picture_panel(name: str, height=170, radius=24) -> ft.Container:
+    """Широкая плашка с иллюстрацией на всю ширину (приветствие). Фон нарисован в самой картинке."""
+    return ft.Container(
+        height=height,
+        border_radius=radius,
+        clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
+        image=ft.DecorationImage(src=f"{ILLUSTRATIONS}{name}.png", fit=ft.ImageFit.COVER, alignment=ft.alignment.center),
+    )
+
+
 def wordmark(size=18) -> ft.Text:
     """Надпись «Вместе привычнее» в двух цветах, как на логотипе."""
     return ft.Text(

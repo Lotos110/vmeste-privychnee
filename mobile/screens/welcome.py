@@ -48,13 +48,7 @@ class WelcomeScreen(Screen):
             ui.centered_text("Вместе", 38, ft.FontWeight.W_800, theme.PRIMARY_DARK),
             ui.centered_text("привычнее", 30, ft.FontWeight.W_800, theme.PRIMARY),
             ui.centered_text("Полезные привычки вместе с теми, кто поддерживает", 14, color=theme.MUTED),
-            ft.Container(
-                bgcolor=theme.GREEN_SOFT,
-                border_radius=24,
-                padding=16,
-                alignment=ft.alignment.center,
-                content=ft.Text("🙌", size=84),
-            ),
+            ui.picture_panel("welcome"),
         ]
         if self.offline_message:
             controls += [

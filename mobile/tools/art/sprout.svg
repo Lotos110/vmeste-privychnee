@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <defs>
+    <linearGradient id="disc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F1EFFF"/>
+      <stop offset="1" stop-color="#E1EEFF"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="0.8" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#8C9BFF"/>
+      <stop offset="1" stop-color="#5042E6"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0.2" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#6BDDA6"/>
+      <stop offset="1" stop-color="#3A9E7C"/>
+    </linearGradient>
+    <linearGradient id="soil" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#B9B2F5"/>
+      <stop offset="1" stop-color="#9FD8BE"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="112" fill="url(#disc)"/>
+  <!-- земля -->
+  <path d="M66 176 C66 160 90 152 120 152 C150 152 174 160 174 176 C174 188 150 194 120 194 C90 194 66 188 66 176 Z" fill="url(#soil)"/>
+  <!-- стебель -->
+  <path d="M120 156 C120 142 120 132 120 118" fill="none" stroke="#3A9E7C" stroke-width="10" stroke-linecap="round"/>
+  <!-- листья: фиолетовый и зелёный, как двое на логотипе -->
+  <path d="M118 140 C112 108 88 88 54 92 C52 126 76 148 118 140 Z" fill="url(#violet)"/>
+  <path d="M122 122 C124 86 152 62 192 64 C194 104 168 130 122 122 Z" fill="url(#green)"/>
+  <path d="M112 134 C100 118 84 106 68 102" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="4" stroke-linecap="round"/>
+  <path d="M128 114 C142 98 160 86 178 78" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="4" stroke-linecap="round"/>
+  <!-- лучики -->
+  <g stroke="#A39BF3" stroke-width="7" stroke-linecap="round" fill="none">
+    <line x1="120" y1="30" x2="120" y2="44"/>
+    <line x1="84" y1="42" x2="92" y2="54"/>
+    <line x1="156" y1="42" x2="148" y2="54"/>
+  </g>
+</svg>

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" width="720" height="360">
+  <defs>
+    <linearGradient id="bg" gradientUnits="userSpaceOnUse" x1="0" y1="360" x2="720" y2="0">
+      <stop offset="0" stop-color="#DDF4E8"/>
+      <stop offset="0.55" stop-color="#E9EEFF"/>
+      <stop offset="1" stop-color="#E4E1FF"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="0.75" y1="0" x2="0.15" y2="1">
+      <stop offset="0" stop-color="#8C9BFF"/>
+      <stop offset="1" stop-color="#5042E6"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0.75" y1="0" x2="0.55" y2="1">
+      <stop offset="0" stop-color="#6BDDA6"/>
+      <stop offset="1" stop-color="#3A9E7C"/>
+    </linearGradient>
+    <linearGradient id="heart" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8C9BFF"/>
+      <stop offset="1" stop-color="#46C7A0"/>
+    </linearGradient>
+    <linearGradient id="chipV" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9186F8"/>
+      <stop offset="1" stop-color="#4A3EE2"/>
+    </linearGradient>
+    <linearGradient id="chipG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6FE0A9"/>
+      <stop offset="1" stop-color="#3AA57B"/>
+    </linearGradient>
+    <clipPath id="leftBody"><path d="M228 372 C228 268 258 224 300 224 C342 224 372 268 372 372 Z"/></clipPath>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#5042E6" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="720" height="360" fill="url(#bg)"/>
+  <circle cx="70" cy="340" r="130" fill="#FFFFFF" opacity="0.38"/>
+  <circle cx="660" cy="30" r="105" fill="#FFFFFF" opacity="0.42"/>
+
+  <!-- плавающие «отметки» -->
+  <g filter="url(#soft)">
+    <circle cx="140" cy="140" r="36" fill="url(#chipV)"/>
+    <circle cx="582" cy="122" r="36" fill="url(#chipG)"/>
+  </g>
+  <polyline points="124,140 136,152 158,128" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="566,122 578,134 600,110" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="202" cy="264" r="22" fill="#FFFFFF" fill-opacity="0.7" stroke="#A39BF3" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/>
+  <circle cx="520" cy="262" r="22" fill="#FFFFFF" fill-opacity="0.7" stroke="#6BDDA6" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/>
+  <circle cx="86" cy="236" r="6" fill="#A39BF3"/>
+  <circle cx="246" cy="76" r="5" fill="#6BDDA6"/>
+  <circle cx="640" cy="236" r="6" fill="#6BDDA6"/>
+  <circle cx="476" cy="62" r="5" fill="#A39BF3"/>
+
+  <!-- двое -->
+  <path d="M228 372 C228 268 258 224 300 224 C342 224 372 268 372 372 Z" fill="url(#violet)"/>
+  <path d="M348 372 C348 268 378 224 420 224 C462 224 492 268 492 372 Z" fill="url(#green)"/>
+  <path d="M348 372 C348 268 378 224 420 224 C462 224 492 268 492 372 Z" fill="#46A9A0" opacity="0.92" clip-path="url(#leftBody)"/>
+  <circle cx="300" cy="172" r="40" fill="url(#chipV)"/>
+  <circle cx="420" cy="172" r="40" fill="url(#chipG)"/>
+
+  <!-- сердце с галочкой и лучики -->
+  <g transform="translate(360 88)" filter="url(#soft)">
+    <path d="M0 32 C-42 4 -38 -32 -15 -32 C-5 -32 0 -25 0 -20 C0 -25 5 -32 15 -32 C38 -32 42 4 0 32 Z" fill="url(#heart)"/>
+  </g>
+  <polyline points="344,88 356,100 378,76" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <g stroke="#A39BF3" stroke-width="8" stroke-linecap="round" fill="none">
+    <line x1="360" y1="28" x2="360" y2="42"/>
+    <line x1="322" y1="38" x2="330" y2="50"/>
+    <line x1="398" y1="38" x2="390" y2="50"/>
+  </g>
+</svg>
