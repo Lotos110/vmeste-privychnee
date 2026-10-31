@@ -178,5 +178,5 @@ class CreateDetailsScreen(Screen):
             self.app.api.post("/habits", payload)
         finally:
             self.sending = False
-        self.app.toast("Привычка создана! Первый шаг сделан 🌱")
+        self.app.toast("Привычка создана. Первый шаг сделан!")
         self.app.open_tab(0)

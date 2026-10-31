@@ -264,12 +264,14 @@ def loading() -> ft.Container:
     )
 
 
-def empty_state(message: str, emoji="🌱") -> ft.Container:
+def empty_state(message: str, emoji=None, art="sprout") -> ft.Container:
+    """Пустое состояние: иллюстрация (art) и подпись. emoji осталось для экранов, где ещё нет своего рисунка."""
+    picture = ft.Text(emoji, size=40) if emoji else illustration(art, 96)
     return ft.Container(
         alignment=ft.alignment.center,
         padding=24,
         content=ft.Column(
-            [ft.Text(emoji, size=40), muted(message, 14, text_align=ft.TextAlign.CENTER)],
+            [picture, muted(message, 14, text_align=ft.TextAlign.CENTER)],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=8,
         ),

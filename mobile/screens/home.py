@@ -185,7 +185,7 @@ class HomeScreen(Screen):
             return ui.card(
                 ft.Row(
                     [
-                        ft.Text("🌿", size=34),
+                        ui.illustration("sprout", 56),
                         ft.Column(
                             [ui.txt("Сегодня", 18, ui.W_BOLD),
                              ui.muted("Привычек по расписанию нет. Отдыхайте!", 13)],
