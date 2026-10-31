@@ -107,7 +107,7 @@ class HabitScreen(Screen):
                     bgcolor=theme.GREEN_SOFT,
                     border_radius=16,
                     padding=14,
-                    content=ui.txt("Сегодня выполнено 🎉 " + streak_text(habit["current_streak"]), 14, ui.W_SEMI, theme.GREEN),
+                    content=ui.txt("Сегодня выполнено. " + streak_text(habit["current_streak"]), 14, ui.W_SEMI, theme.GREEN),
                 ),
                 ui.outline_button("Отменить отметку", self.app.guard(self.undo)),
             ]

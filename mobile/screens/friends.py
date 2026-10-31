@@ -51,7 +51,7 @@ class FriendsScreen(Screen):
                 controls.append(self._person_row(person, accept=True))
         controls.append(ui.txt("Мои друзья", 18, ui.W_BOLD))
         if not data["friends"]:
-            controls.append(ui.empty_state("Друзей пока нет. Добавьте первого по коду.", "🤝"))
+            controls.append(ui.empty_state("Друзей пока нет. Добавьте первого по коду.", art="friends"))
         for person in data["friends"]:
             controls.append(self._person_row(person))
         if data["outgoing"]:
@@ -97,7 +97,7 @@ class FriendsScreen(Screen):
         result = self.app.api.post("/friends/by-code", {"code": code})
         name = result["person"]["name"]
         if result["status"] == "accepted":
-            self.app.toast(f"{name} теперь в друзьях 🎉")
+            self.app.toast(f"{name} теперь в друзьях")
         else:
             self.app.toast(f"Заявка отправлена: {name}")
         self.code_field.value = ""
@@ -105,7 +105,7 @@ class FriendsScreen(Screen):
 
     def accept(self, person: dict) -> None:
         self.app.api.post(f"/friends/{person['id']}/accept")
-        self.app.toast(f"{person['name']} теперь в друзьях 🎉")
+        self.app.toast(f"{person['name']} теперь в друзьях")
         self.refresh()
 
     def remove(self, person: dict, ask: bool) -> None:

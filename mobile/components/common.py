@@ -72,51 +72,66 @@ def card(content, padding=16, on_click=None, bgcolor=theme.CARD, radius=20, **kw
     )
 
 
-def _button(label, on_click, bgcolor, color, side=None, height=52) -> ft.Row:
-    button = ft.ElevatedButton(
-        content=txt(label, 15, W_SEMI, color),
-        on_click=on_click,
-        height=height,
-        expand=True,
-        style=ft.ButtonStyle(
-            color=color,
-            bgcolor=bgcolor,
-            elevation=0,
-            side=side,
-            shape=ft.RoundedRectangleBorder(radius=16),
-        ),
+def _gradient() -> ft.LinearGradient:
+    return ft.LinearGradient(
+        begin=ft.alignment.top_left, end=ft.alignment.bottom_right, colors=theme.BUTTON_GRADIENT
     )
-    return ft.Row([button])
+
+
+def _button(label, on_click, color, bgcolor=None, gradient=None, border=None, shadow=None, height=52) -> ft.Row:
+    """Большая кнопка на всю ширину. Форма, заливка и тени всех больших кнопок задаются здесь и ниже."""
+    return ft.Row(
+        [
+            ft.Container(
+                content=txt(label, 15, W_SEMI, color, text_align=ft.TextAlign.CENTER),
+                expand=True,
+                height=height,
+                border_radius=16,
+                bgcolor=bgcolor,
+                gradient=gradient,
+                border=border,
+                shadow=shadow,
+                alignment=ft.alignment.center,
+                ink=True,  # волна при нажатии
+                on_click=on_click,
+            )
+        ]
+    )
 
 
 def primary_button(label, on_click) -> ft.Row:
-    return _button(label, on_click, theme.PRIMARY, theme.WHITE)
+    shadow = ft.BoxShadow(blur_radius=18, spread_radius=-2, color=theme.BUTTON_SHADOW, offset=ft.Offset(0, 8))
+    return _button(label, on_click, theme.WHITE, gradient=_gradient(), shadow=shadow)
 
 
 def soft_button(label, on_click) -> ft.Row:
-    return _button(label, on_click, theme.PRIMARY_SOFT, theme.PRIMARY)
+    return _button(label, on_click, theme.PRIMARY, bgcolor=theme.PRIMARY_SOFT)
 
 
 def outline_button(label, on_click) -> ft.Row:
-    return _button(label, on_click, theme.CARD, theme.PRIMARY, side=ft.BorderSide(1.5, theme.PRIMARY_SOFT))
+    return _button(label, on_click, theme.PRIMARY, bgcolor=theme.CARD, border=ft.border.all(1.5, theme.PRIMARY_SOFT))
 
 
 def danger_button(label, on_click) -> ft.Row:
-    return _button(label, on_click, theme.RED_SOFT, theme.RED)
+    return _button(label, on_click, theme.RED, bgcolor=theme.RED_SOFT)
 
 
-def small_button(label, on_click, filled=True, color=theme.PRIMARY) -> ft.ElevatedButton:
-    return ft.ElevatedButton(
+def small_button(label, on_click, filled=True, color=theme.PRIMARY) -> ft.Container:
+    """Маленькая кнопка по размеру надписи. filled=True: градиент (или сплошной цвет, если color не основной),
+    filled=False: светлая заливка."""
+    if not filled:
+        fill = dict(bgcolor=theme.PRIMARY_SOFT)
+    elif color == theme.PRIMARY:
+        fill = dict(gradient=_gradient())
+    else:
+        fill = dict(bgcolor=color)
+    return ft.Container(
         content=txt(label, 13, W_SEMI, theme.WHITE if filled else color),
+        padding=ft.padding.symmetric(horizontal=16, vertical=9),
+        border_radius=12,
+        ink=True,
         on_click=on_click,
-        height=36,
-        style=ft.ButtonStyle(
-            color=theme.WHITE if filled else color,
-            bgcolor=color if filled else theme.PRIMARY_SOFT,
-            elevation=0,
-            shape=ft.RoundedRectangleBorder(radius=12),
-            padding=ft.padding.symmetric(horizontal=16),
-        ),
+        **fill,
     )
 
 
@@ -264,14 +279,13 @@ def loading() -> ft.Container:
     )
 
 
-def empty_state(message: str, emoji=None, art="sprout") -> ft.Container:
-    """Пустое состояние: иллюстрация (art) и подпись. emoji осталось для экранов, где ещё нет своего рисунка."""
-    picture = ft.Text(emoji, size=40) if emoji else illustration(art, 96)
+def empty_state(message: str, art="sprout") -> ft.Container:
+    """Пустое состояние: иллюстрация из assets/images/illustrations (sprout, books, friends, bell) и подпись."""
     return ft.Container(
         alignment=ft.alignment.center,
         padding=24,
         content=ft.Column(
-            [picture, muted(message, 14, text_align=ft.TextAlign.CENTER)],
+            [illustration(art, 96), muted(message, 14, text_align=ft.TextAlign.CENTER)],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=8,
         ),
@@ -320,6 +334,13 @@ ILLUSTRATIONS = "images/illustrations/"
 def illustration(name: str, size=88) -> ft.Image:
     """Квадратная иллюстрация из assets/images/illustrations (рисунки лежат в mobile/tools/art)."""
     return ft.Image(src=f"{ILLUSTRATIONS}{name}.png", width=size, height=size, fit=ft.ImageFit.CONTAIN)
+
+
+def tishka(mood="smile", width=120) -> ft.Image:
+    """Помощник Тишка (облачко): mood = "smile" (улыбается) или "calm" (глаза закрыты, для дыхания и трудных минут)."""
+    return ft.Image(
+        src=f"{ILLUSTRATIONS}tishka_{mood}.png", width=width, height=round(width * 420 / 510), fit=ft.ImageFit.CONTAIN
+    )
 
 
 def picture_panel(name: str, height=170, radius=24) -> ft.Container:

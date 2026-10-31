@@ -16,6 +16,9 @@ PRIMARY = "#6C5CE7"
 PRIMARY_DARK = "#5547D0"
 PRIMARY_SOFT = "#EEEBFD"
 PRIMARY_GRADIENT = ["#6C5CE7", "#8C7CF4"]
+# главные кнопки: градиент и цветная тень (стиль «мягкий градиент»; менять здесь, в одном месте)
+BUTTON_GRADIENT = ["#7E6EF0", "#5A49DC"]
+BUTTON_SHADOW = "#476C5CE7"  # формат #AARRGGBB: фиолетовая тень с прозрачностью около 28%
 
 GREEN = "#3CB878"
 GREEN_LIGHT = "#8FD9AE"

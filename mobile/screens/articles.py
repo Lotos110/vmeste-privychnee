@@ -101,7 +101,7 @@ class ArticlesScreen(Screen):
             )
         controls.append(ft.Row(chips, scroll=ft.ScrollMode.AUTO, spacing=8))
         if not articles:
-            controls.append(ui.empty_state("В этой теме пока нет статей", "📚"))
+            controls.append(ui.empty_state("В этой теме пока нет статей", art="books"))
         for article in articles:
             controls.append(article_card(app, article, lambda e, a=article: app.push(ArticleScreen(app, a["id"]))))
         controls.append(ui.spacer(8))

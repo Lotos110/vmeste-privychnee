@@ -32,7 +32,7 @@ class NotificationsScreen(Screen):
         if any(not n["read"] for n in nudges):
             api.post("/nudges/read")  # показываем непрочитанные выделенными, но дальше они уже прочитаны
         if not nudges:
-            return [ui.empty_state("Пока тихо. Здесь будут напоминания и поддержка от напарников.", "🔔")]
+            return [ui.empty_state("Пока тихо. Здесь будут напоминания и поддержка от напарников.", art="bell")]
 
         controls: list[ft.Control] = []
         for nudge in nudges:

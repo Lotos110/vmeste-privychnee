@@ -87,7 +87,6 @@ class ProfileScreen(Screen):
             ui.soft_button("Редактировать профиль", lambda e: app.push(EditProfileScreen(app, me))),
             ui.danger_button("Выйти", lambda e: app.confirm("Выйти из аккаунта?", "Вы сможете войти снова в любой момент.",
                                                             "Выйти", app.logout)),
-            ft.Row([ui.muted(f"Сервер: {app.api.base_url}", 11)], alignment=ft.MainAxisAlignment.CENTER),
             ui.spacer(8),
         ]
         return controls

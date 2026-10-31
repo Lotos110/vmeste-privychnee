@@ -215,7 +215,7 @@ class HomeScreen(Screen):
             caption = f"Осталось отметить: {len(pending)}"
             action = ui.small_button("Отметить привычки", lambda e: self.mark_dialog(pending))
         else:
-            caption = "Всё отмечено, так держать! 🎉"
+            caption = "Всё отмечено, так держать!"
             action = ui.muted("Завтра продолжим", 12)
         return ui.card(
             ft.Row(
