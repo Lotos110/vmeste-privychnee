@@ -386,14 +386,26 @@ def format_code(code: str) -> str:
 
 
 def menu_row(icon_name: str, label: str, on_click, subtitle: str | None = None,
-             color=theme.PRIMARY, bg=theme.PRIMARY_SOFT) -> ft.Container:
+             color=theme.PRIMARY, bg=theme.PRIMARY_SOFT, art: str | None = None) -> ft.Container:
+    """Строка меню. Слева значок Material (icon_name) или, если задан art, картинка из illustrations."""
     texts = [txt(label, 15, W_SEMI)]
     if subtitle:
         texts.append(muted(subtitle, 12))
+    if art:
+        lead = ft.Container(
+            width=40,
+            height=40,
+            border_radius=20,
+            bgcolor=bg,
+            alignment=ft.alignment.center,
+            content=ft.Image(src=f"{ILLUSTRATIONS}{art}.png", width=32, height=32, fit=ft.ImageFit.CONTAIN),
+        )
+    else:
+        lead = circle_icon(icon_name, bg, color, 40)
     return card(
         ft.Row(
             [
-                circle_icon(icon_name, bg, color, 40),
+                lead,
                 ft.Column(texts, spacing=2, expand=True),
                 ft.Icon(icon("CHEVRON_RIGHT"), color=theme.MUTED),
             ],

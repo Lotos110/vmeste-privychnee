@@ -226,7 +226,7 @@ class ArticleScreen(Screen):
         elif article["category"] == "relapse":
             from screens.sos import SosScreen
 
-            controls.append(ui.primary_button("Открыть SOS-бота", lambda e: app.push(SosScreen(app))))
+            controls.append(ui.primary_button("Заглянуть к Тишке", lambda e: app.push(SosScreen(app))))
         controls += self._related(article)
         controls.append(ui.spacer(8))
         return controls

@@ -24,18 +24,22 @@ class SosButton(BaseModel):
     id: str
     label: str
     next: str | None = None
-    action: str | None = None  # "home" — вернуться на главный экран
+    action: str | None = None  # "home" — к привычкам, "partner" — написать напарнику
 
 
 class SosScene(BaseModel):
     id: str
     text: str
     buttons: list[SosButton]
+    kind: str = "chat"  # chat | breathing | write | care: как приложение рисует сцену
+    mood: str = "smile"  # smile | calm: настроение Тишки
+    hint: str | None = None  # подсказка в поле ввода (kind write)
 
 
 class SosOut(BaseModel):
     scene: SosScene
     disclaimer: str
+    partner_message: str = "Мне сегодня непросто. Поддержи меня, пожалуйста."
 
 
 class SosNextIn(BaseModel):

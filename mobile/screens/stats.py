@@ -1,4 +1,4 @@
-"""Моя статистика: серии, график выполнения, статьи и SOS."""
+"""Моя статистика: серии, график выполнения, статьи и помощник Тишка."""
 
 import flet as ft
 
@@ -118,12 +118,12 @@ class StatsScreen(Screen):
             ui.card(
                 ft.Row(
                     [
-                        ft.Text("🤖", size=44),
+                        ui.tishka("smile", 84),
                         ft.Column(
                             [
-                                ui.txt("SOS-бот", 16, ui.W_BOLD),
-                                ui.muted("Чувствуешь, что можешь сорваться? Мы рядом!", 12),
-                                ui.small_button("Написать", lambda e: app.push(SosScreen(app))),
+                                ui.txt("Тишка рядом", 16, ui.W_BOLD),
+                                ui.muted("Тяжело или хочется сорваться? Можно подышать, написать, что на душе, и вернуться.", 12),
+                                ui.small_button("Заглянуть", lambda e: app.push(SosScreen(app))),
                             ],
                             spacing=6,
                             expand=True,

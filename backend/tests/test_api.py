@@ -346,7 +346,7 @@ def test_sos_bot(register, client):
 
     relapse = anna.post("/sos/next", {"scene_id": "start", "button_id": "relapse"}).json()
     assert relapse["scene"]["id"] == "relapse"
-    assert anna.post("/sos/next", {"scene_id": "plan5", "button_id": "habit"}).status_code == 400  # action
+    assert anna.post("/sos/next", {"scene_id": "step", "button_id": "habits"}).status_code == 400  # action
     assert anna.post("/sos/next", {"scene_id": "nope", "button_id": "x"}).status_code == 404
 
 

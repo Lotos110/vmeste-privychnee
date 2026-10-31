@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 40 170 140" width="170" height="140">
+  <defs><linearGradient id="cloud" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D9D3FF"/></linearGradient></defs>
+  <ellipse cx="103" cy="168" rx="52" ry="7" fill="#DCD8F2"/>
+  <g fill="#C9C3F7" stroke="#C9C3F7" stroke-width="3"><circle cx="66" cy="112" r="30"/><circle cx="104" cy="92" r="40"/><circle cx="140" cy="116" r="28"/><rect x="48" y="112" width="110" height="46" rx="23"/></g>
+  <g fill="url(#cloud)"><circle cx="66" cy="112" r="28.5"/><circle cx="104" cy="92" r="38.5"/><circle cx="140" cy="116" r="26.5"/><rect x="49.5" y="113.5" width="107" height="43" rx="21.5"/></g>
+  <path d="M84 78C92 70 104 68 112 72" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+  <path d="M82 119q6-6 12 0M112 119q6-6 12 0" stroke="#3B3470" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M99 129q4 3.5 8 0" stroke="#3B3470" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <circle cx="76" cy="130" r="6" fill="#FFB4C8" opacity=".6"/><circle cx="130" cy="130" r="6" fill="#FFB4C8" opacity=".6"/>
+</svg>

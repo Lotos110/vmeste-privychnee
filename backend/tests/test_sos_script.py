@@ -1,4 +1,4 @@
-"""Проверка сценария SOS-бота (app/content/sos.json): нет битых ссылок и тупиков."""
+"""Проверка сценария помощника Тишки (app/content/sos.json): нет битых ссылок и тупиков."""
 
 import json
 from pathlib import Path
@@ -7,6 +7,9 @@ SCRIPT = json.loads(
     (Path(__file__).resolve().parent.parent / "app" / "content" / "sos.json").read_text("utf-8")
 )
 SCENES = SCRIPT["scenes"]
+ACTIONS = {"home", "partner"}
+KINDS = {"chat", "breathing", "write", "care"}
+MOODS = {"smile", "calm"}
 
 
 def test_start_exists_and_disclaimer_present():
@@ -45,3 +48,31 @@ def test_all_scenes_reachable_and_can_finish():
                 can_finish.add(sid)
                 changed = True
     assert can_finish == set(SCENES)
+
+
+def test_actions_kinds_and_moods_are_known():
+    for scene_id, scene in SCENES.items():
+        assert scene["text"].strip(), scene_id
+        assert scene.get("kind", "chat") in KINDS, scene_id
+        assert scene.get("mood", "smile") in MOODS, scene_id
+        if scene.get("kind") == "write":
+            assert scene.get("hint"), f"у сцены {scene_id} нет подсказки для поля"
+        for button in scene["buttons"]:
+            assert button["label"].strip(), (scene_id, button["id"])
+            if button.get("action"):
+                assert button["action"] in ACTIONS, (scene_id, button["id"])
+
+
+def test_partner_message_fits_nudge_limit():
+    message = SCRIPT["partner_message"].strip()
+    assert 1 <= len(message) <= 140  # столько сообщение может занимать на сервере
+
+
+def test_heavy_state_leads_to_care_screen_with_emergency_number():
+    care = [sid for sid, scene in SCENES.items() if scene.get("kind") == "care"]
+    assert care, "нет бережного экрана для тяжёлых состояний"
+    for sid in care:
+        assert "112" in SCENES[sid]["text"]
+    # экран доступен из сцены «Мне тяжело», а с него есть путь назад и к привычкам
+    assert any(b.get("next") in care for b in SCENES["hard"]["buttons"])
+    assert any(b.get("action") == "home" for b in SCENES[care[0]]["buttons"])

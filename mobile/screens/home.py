@@ -238,13 +238,21 @@ class HomeScreen(Screen):
 
         app = self.app
         return ui.card(
-            ft.Column(
+            ft.Row(
                 [
-                    ui.txt("Был трудный день?", 16, ui.W_BOLD),
-                    ui.muted("Один срыв не отменяет прогресс. SOS-бот поможет вернуться без чувства вины.", 13),
-                    ui.soft_button("Открыть SOS-бота", lambda e: app.push(SosScreen(app))),
+                    ui.tishka("calm", 84),
+                    ft.Column(
+                        [
+                            ui.txt("Был трудный день?", 16, ui.W_BOLD),
+                            ui.muted("Один срыв не отменяет прогресс. Тишка рядом: поможет вернуться без чувства вины.", 13),
+                            ui.small_button("Заглянуть к Тишке", lambda e: app.push(SosScreen(app))),
+                        ],
+                        spacing=8,
+                        expand=True,
+                    ),
                 ],
-                spacing=8,
+                spacing=12,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
             bgcolor=theme.PRIMARY_SOFT,
         )
@@ -279,8 +287,8 @@ class HomeScreen(Screen):
         ))
         slides.append((
             "sos",
-            banner(images + "sos.png", "SOS-бот", "Тяжело или сорвались? Поддержим без осуждения",
-                   "Открыть", lambda e: app.push(SosScreen(app)), theme.PRIMARY),
+            banner(images + "sos.png", "Тишка рядом", "Тяжело или сорвались? Поддержим без осуждения",
+                   "Заглянуть", lambda e: app.push(SosScreen(app)), theme.PRIMARY),
         ))
         slides.append((
             "soon",
@@ -288,7 +296,7 @@ class HomeScreen(Screen):
                    "Скоро"),
         ))
 
-        # что нужнее прямо сейчас — первым: после срыва SOS-бот, без друзей приглашение
+        # что нужнее прямо сейчас — первым: после срыва Тишка, без друзей приглашение
         first = None
         if any(h["today_status"] == "missed" for h in habits):
             first = "sos"

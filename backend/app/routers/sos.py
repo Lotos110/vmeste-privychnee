@@ -1,4 +1,4 @@
-"""SOS-бот: кнопочный сценарий из JSON, без нейросети. Предсказуем и не скажет лишнего."""
+"""Помощник Тишка (SOS): кнопочный сценарий из JSON, без нейросети. Предсказуем и не скажет лишнего."""
 
 import json
 from functools import lru_cache
@@ -26,8 +26,12 @@ def _scene(script: dict, scene_id: str) -> SosOut:
             id=scene_id,
             text=raw["text"],
             buttons=[SosButton(**button) for button in raw["buttons"]],
+            kind=raw.get("kind", "chat"),
+            mood=raw.get("mood", "smile"),
+            hint=raw.get("hint"),
         ),
         disclaimer=script["disclaimer"],
+        partner_message=script.get("partner_message") or SosOut.model_fields["partner_message"].default,
     )
 
 

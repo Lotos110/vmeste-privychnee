@@ -120,7 +120,7 @@ class HabitScreen(Screen):
                     content=ui.txt("Сегодня не получилось. Один срыв не отменяет прогресс, вернуться можно в любой момент.", 13, color=theme.TEXT),
                 ),
                 ui.primary_button("Всё-таки выполнено", self.app.guard(self.mark_done)),
-                ui.soft_button("Открыть SOS-бота", lambda e: self.open_sos()),
+                ui.soft_button("Заглянуть к Тишке", lambda e: self.open_sos()),
             ]
         controls: list[ft.Control] = []
         if status == "off":
@@ -294,8 +294,8 @@ class HabitScreen(Screen):
             self.refresh()
             self.app.dialog(
                 "Ничего страшного",
-                ft.Text("Один срыв не отменяет прогресс. Хотите открыть SOS-бота, чтобы вернуться без чувства вины?"),
-                [("Не сейчас", None), ("Открыть SOS-бота", self.open_sos)],
+                ft.Text("Один срыв не отменяет прогресс. Хотите заглянуть к помощнику Тишке, чтобы вернуться без чувства вины?"),
+                [("Не сейчас", None), ("Заглянуть к Тишке", self.open_sos)],
             )
 
         self.app.dialog("Что помешало?", group, [("Отмена", None), ("Сохранить", save)])
