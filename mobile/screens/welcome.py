@@ -59,14 +59,12 @@ class WelcomeScreen(Screen):
             ui.primary_button("Зарегистрироваться", lambda e: app.push(RegisterScreen(app))),
             ui.outline_button("Войти", lambda e: app.push(LoginScreen(app))),
             ft.Row([legal_text(app)], alignment=ft.MainAxisAlignment.CENTER),
-            ft.Row(
-                [ui.link(f"Сервер: {app.api.base_url}", lambda e: self.server_dialog(), theme.MUTED, 12)],
-                alignment=ft.MainAxisAlignment.CENTER,
-            ),
         ]
         return controls
 
     def server_dialog(self):
+        # С экрана ссылка убрана: адрес берётся из config.py. Диалог оставлен до решения,
+        # нужен ли скрытый способ сменить адрес для разработки (тогда его вызовет, например, долгое нажатие).
         app = self.app
         field = ui.field("Адрес сервера", app.api.base_url, hint="http://192.168.0.10:8000")
 
