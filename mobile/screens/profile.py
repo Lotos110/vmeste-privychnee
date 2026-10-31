@@ -20,6 +20,7 @@ class ProfileScreen(Screen):
 
         from screens.friends import FriendsScreen
         from screens.notifications import NotificationsScreen
+        from screens.recovery import RecoveryCodeScreen
         from screens.sos import SosScreen
         from screens.stats import StatsScreen
 
@@ -83,6 +84,8 @@ class ProfileScreen(Screen):
                         "Сообщения от напарников", theme.BLUE, theme.BLUE_SOFT),
             ui.menu_row("", "Тишка", lambda e: app.push(SosScreen(app)), "SOS-помощник: если трудно или сорвались",
                         art="tishka_smile"),
+            ui.menu_row("VPN_KEY", "Код восстановления", lambda e: self.recovery_dialog(RecoveryCodeScreen),
+                        "Если забудете пароль", theme.GREEN, theme.GREEN_SOFT),
             ui.spacer(4),
             ui.soft_button("Редактировать профиль", lambda e: app.push(EditProfileScreen(app, me))),
             ui.danger_button("Выйти", lambda e: app.confirm("Выйти из аккаунта?", "Вы сможете войти снова в любой момент.",
@@ -90,6 +93,30 @@ class ProfileScreen(Screen):
             ui.spacer(8),
         ]
         return controls
+
+
+    def recovery_dialog(self, code_screen) -> None:
+        """Создаёт новый код восстановления (нужен пароль); прежний код после этого перестаёт работать."""
+        app = self.app
+        password = ui.field("Пароль", password=True, prefix="LOCK_OUTLINE")
+
+        def create():
+            data = app.api.post("/auth/recovery-code", {"password": password.value or ""})
+            app.push(code_screen(app, data["recovery_code"]))
+
+        app.dialog(
+            "Новый код восстановления",
+            ft.Column(
+                [
+                    ui.muted("Код нужен, если забудете пароль. Прежний код перестанет работать. "
+                             "Для подтверждения введите пароль.", 12),
+                    password,
+                ],
+                tight=True,
+                spacing=12,
+            ),
+            [("Отмена", None), ("Создать код", create)],
+        )
 
 
 class EditProfileScreen(Screen):

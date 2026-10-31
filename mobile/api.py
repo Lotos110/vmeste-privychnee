@@ -139,7 +139,7 @@ class Api:
             )
         except httpx.HTTPError as exc:
             raise ApiError(
-                0, f"Нет связи с сервером ({self.base_url}). Проверьте интернет и адрес сервера."
+                0, f"Нет связи с сервером. Проверьте интернет и попробуйте ещё раз."
             ) from exc
 
     def _refresh_tokens(self) -> bool:
@@ -192,13 +192,24 @@ class Api:
     # ---------- авторизация ----------
 
     def register(self, email: str, password: str, name: str) -> dict:
+        """Возвращает ответ сервера: user и recovery_code (код восстановления, его показывают один раз)."""
         data = self.post(
             "/auth/register",
             {"email": email, "password": password, "name": name, "timezone": detect_timezone()},
             auth=False,
         )
         self.save_tokens(data["access_token"], data["refresh_token"])
-        return data["user"]
+        return data
+
+    def reset_password(self, email: str, recovery_code: str, new_password: str) -> dict:
+        """Новый пароль по коду восстановления. Возвращает user и новый recovery_code, вход выполняется сразу."""
+        data = self.post(
+            "/auth/reset-password",
+            {"email": email, "recovery_code": recovery_code, "new_password": new_password},
+            auth=False,
+        )
+        self.save_tokens(data["access_token"], data["refresh_token"])
+        return data
 
     def login(self, email: str, password: str) -> dict:
         data = self.post("/auth/login", {"email": email, "password": password}, auth=False)

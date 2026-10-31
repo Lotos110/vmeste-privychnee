@@ -112,8 +112,11 @@ class RegisterScreen(Screen):
             return self.app.toast("Укажите имя", error=True)
         if len(password) < 8:
             return self.app.toast("Пароль: не менее 8 символов", error=True)
-        user = self.app.api.register(email, password, name)
-        self.app.after_auth(user)
+        from screens.recovery import RecoveryCodeScreen
+
+        data = self.app.api.register(email, password, name)
+        # сразу после регистрации показываем код восстановления: потом его уже не увидеть
+        self.app.show_root(RecoveryCodeScreen(self.app, data["recovery_code"], data["user"]))
 
 
 class LoginScreen(Screen):
@@ -136,6 +139,7 @@ class LoginScreen(Screen):
             self.password,
             ui.spacer(4),
             ui.primary_button("Войти", self.app.guard(self.submit)),
+            ft.Row([ui.link("Забыли пароль?", lambda e: self.go_reset())], alignment=ft.MainAxisAlignment.CENTER),
             ft.Row(
                 [
                     ui.muted("Ещё нет аккаунта?"),
@@ -149,6 +153,11 @@ class LoginScreen(Screen):
     def go_register(self):
         self.app.pop()
         self.app.push(RegisterScreen(self.app))
+
+    def go_reset(self):
+        from screens.recovery import ResetPasswordScreen
+
+        self.app.push(ResetPasswordScreen(self.app, (self.email.value or "").strip()))
 
     def submit(self):
         email = (self.email.value or "").strip()

@@ -143,6 +143,22 @@ def link(label, on_click, color=theme.PRIMARY, size=14) -> ft.Container:
     )
 
 
+def _eye_button(tf: ft.TextField) -> ft.IconButton:
+    """Значок-«глазик» в поле пароля: показать или скрыть набранное."""
+    button = ft.IconButton(
+        icon=icon("VISIBILITY_OFF_OUTLINED"), icon_color=theme.MUTED, icon_size=20, tooltip="Показать пароль"
+    )
+
+    def toggle(e):
+        tf.password = not tf.password
+        button.icon = icon("VISIBILITY_OFF_OUTLINED" if tf.password else "VISIBILITY_OUTLINED")
+        button.tooltip = "Показать пароль" if tf.password else "Скрыть пароль"
+        tf.update()
+
+    button.on_click = toggle
+    return button
+
+
 def field(
     label,
     value="",
@@ -169,12 +185,11 @@ def field(
         kwargs["max_length"] = max_length
     if on_submit:
         kwargs["on_submit"] = on_submit
-    return ft.TextField(
+    tf = ft.TextField(
         label=label,
         value=value or "",
         hint_text=hint,
         password=password,
-        can_reveal_password=password,
         border_radius=14,
         filled=True,
         bgcolor=theme.CARD,
@@ -183,6 +198,9 @@ def field(
         text_size=15,
         **kwargs,
     )
+    if password:
+        tf.suffix = _eye_button(tf)  # свой «глазик» вместо встроенного: одинаково на всех устройствах
+    return tf
 
 
 def progress(percent, color=theme.GREEN, height=8) -> ft.Container:
