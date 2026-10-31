@@ -10,7 +10,6 @@ import config
 
 ACCESS_KEY = "vmeste.access"
 REFRESH_KEY = "vmeste.refresh"
-URL_KEY = "vmeste.api_url"
 
 FIELD_MESSAGES = {
     "email": "Проверьте адрес электронной почты",
@@ -94,16 +93,7 @@ class Api:
 
     @property
     def base_url(self) -> str:
-        return (self.storage.get(URL_KEY) or config.DEFAULT_API_URL).rstrip("/")
-
-    def set_base_url(self, url: str) -> None:
-        url = url.strip().rstrip("/")
-        if url and not url.startswith(("http://", "https://")):
-            url = "http://" + url
-        if url:
-            self.storage.set(URL_KEY, url)
-        else:
-            self.storage.remove(URL_KEY)
+        return config.DEFAULT_API_URL.rstrip("/")
 
     def media_url(self, path: str | None) -> str | None:
         if not path:

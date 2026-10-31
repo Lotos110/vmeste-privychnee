@@ -62,23 +62,6 @@ class WelcomeScreen(Screen):
         ]
         return controls
 
-    def server_dialog(self):
-        # С экрана ссылка убрана: адрес берётся из config.py. Диалог оставлен до решения,
-        # нужен ли скрытый способ сменить адрес для разработки (тогда его вызовет, например, долгое нажатие).
-        app = self.app
-        field = ui.field("Адрес сервера", app.api.base_url, hint="http://192.168.0.10:8000")
-
-        def save():
-            app.api.set_base_url(field.value or "")
-            app.toast("Адрес сохранён")
-            app.start()
-
-        app.dialog(
-            "Адрес сервера",
-            ft.Column([ui.muted("Для телефона укажите IP-адрес компьютера с сервером.", 12), field], tight=True),
-            [("Отмена", None), ("Сохранить", save)],
-        )
-
 
 class RegisterScreen(Screen):
     title = "Регистрация"
