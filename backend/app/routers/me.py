@@ -8,6 +8,8 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 from app.config import get_settings
 from app.deps import DB, CurrentUser
 from app.schemas.user import MeOut, MeUpdate
+from app.services import rating
+from app.services.age import community_access
 from app.services.people import build_me
 
 router = APIRouter(prefix="/me", tags=["profile"])
@@ -31,11 +33,20 @@ def update_me(data: MeUpdate, user: CurrentUser, db: DB):
     fields = data.model_dump(exclude_unset=True)
     if "name" in fields and fields["name"] is None:
         raise HTTPException(status_code=422, detail="Имя не может быть пустым")
-    if fields.get("timezone") is None:
-        fields.pop("timezone", None)
+    for key in ("timezone", "is_public"):  # у этих полей пустого значения нет
+        if fields.get(key) is None:
+            fields.pop(key, None)
     for key, value in fields.items():
         setattr(user, key, value)
+    if user.is_public and community_access(user) != "ok":
+        db.rollback()
+        raise HTTPException(
+            status_code=422,
+            detail="Чтобы участвовать в общем рейтинге, укажите дату рождения: раздел доступен с 12 лет",
+        )
     db.commit()
+    if "is_public" in fields or "birth_date" in fields:
+        rating.clear_cache()
     return build_me(db, user)
 
 

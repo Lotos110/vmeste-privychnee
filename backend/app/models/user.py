@@ -10,6 +10,7 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.sql import expression
 
 from app.db import Base
 from app.services import timeutil
@@ -32,6 +33,8 @@ class User(Base):
     friend_code: Mapped[str] = mapped_column(String(8), unique=True, index=True)
     timezone: Mapped[str] = mapped_column(String(64), default="UTC")
     is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
+    # участвует ли в общем рейтинге (по умолчанию нет: человек включает сам)
+    is_public: Mapped[bool] = mapped_column(Boolean, default=False, server_default=expression.false())
     token_version: Mapped[int] = mapped_column(Integer, default=0)  # +1 = отозвать все токены
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: timeutil.utcnow()

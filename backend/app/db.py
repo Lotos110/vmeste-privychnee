@@ -36,7 +36,8 @@ def _make_engine() -> Engine:
 
 def add_missing_columns(bind: Engine) -> list[str]:
     """Для базы, созданной через create_all (быстрый старт на SQLite): добавляет в уже существующие
-    таблицы новые необязательные колонки, которых там ещё нет, и возвращает их имена («таблица.колонка»).
+    таблицы новые колонки, которых там ещё нет, и возвращает их имена («таблица.колонка»).
+    Подходят необязательные колонки и обязательные с простым server_default (например, false).
 
     create_all не меняет готовые таблицы, поэтому без этого после обновления кода сервер упал бы на
     базе с данными. Обязательные колонки и сложные правки схемы так не делаются: для них есть Alembic.
@@ -50,11 +51,19 @@ def add_missing_columns(bind: Engine) -> list[str]:
                 continue
             existing = {c["name"] for c in inspector.get_columns(table.name)}
             for column in table.columns:
-                if column.name in existing or column.primary_key or not column.nullable:
+                if column.name in existing or column.primary_key:
                     continue
                 kind = column.type.compile(dialect=bind.dialect)
+                extra = ""
+                if not column.nullable:
+                    default = getattr(column.server_default, "arg", None)
+                    if default is None:
+                        continue  # обязательная колонка без значения по умолчанию: только через Alembic
+                    if not isinstance(default, str):
+                        default = str(default.compile(dialect=bind.dialect))
+                    extra = f" NOT NULL DEFAULT {default if default.isidentifier() or default.isdigit() else repr(default)}"
                 conn.execute(
-                    text(f"ALTER TABLE {quote(table.name)} ADD COLUMN {quote(column.name)} {kind}")
+                    text(f"ALTER TABLE {quote(table.name)} ADD COLUMN {quote(column.name)} {kind}{extra}")
                 )
                 added.append(f"{table.name}.{column.name}")
     return added

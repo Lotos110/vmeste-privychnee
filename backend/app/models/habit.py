@@ -113,20 +113,22 @@ class Nudge(Base):
     __table_args__ = (Index("ix_nudges_to_user_created", "to_user", "created_at"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    habit_id: Mapped[int] = mapped_column(ForeignKey("habits.id", ondelete="CASCADE"))
+    # у сообщений из ленты «Поиск напарника» привычки нет
+    habit_id: Mapped[int | None] = mapped_column(ForeignKey("habits.id", ondelete="CASCADE"), nullable=True)
     from_user: Mapped[int | None] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=True
     )
     to_user: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     text: Mapped[str] = mapped_column(String(200))
-    kind: Mapped[str] = mapped_column(String(10), default="partner")  # partner | reminder | risk
+    # partner | reminder | risk | response (отклик на объявление) | accepted (отклик принят)
+    kind: Mapped[str] = mapped_column(String(10), default="partner")
     local_date: Mapped[date | None] = mapped_column(Date, nullable=True)  # для защиты от дублей
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: timeutil.utcnow()
     )
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    habit: Mapped[Habit] = relationship(back_populates="nudges")
+    habit: Mapped[Habit | None] = relationship(back_populates="nudges")
     sender: Mapped[User | None] = relationship(foreign_keys=[from_user])
 
 

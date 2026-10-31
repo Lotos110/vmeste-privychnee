@@ -21,7 +21,7 @@ from app import ratelimit  # noqa: E402
 from app.db import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 from app.seed import seed_content  # noqa: E402
-from app.services import timeutil  # noqa: E402
+from app.services import rating, timeutil  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -31,6 +31,7 @@ def fresh_db():
     with SessionLocal() as db:
         seed_content(db)
     ratelimit.reset_all()
+    rating.clear_cache()
     yield
 
 

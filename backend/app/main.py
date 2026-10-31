@@ -14,7 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from app.admin import setup_admin
 from app.config import get_settings
 from app.db import Base, SessionLocal, add_missing_columns, engine
-from app.routers import articles, auth, friends, habits, legal, me, sos, stats
+from app.routers import articles, auth, community, friends, habits, legal, me, ratings, sos, stats
 from app.scheduler import start_scheduler
 from app.seed import seed_content
 
@@ -62,7 +62,7 @@ def create_app() -> FastAPI:
     app.mount("/media", StaticFiles(directory=media), name="media")
 
     for router in (auth.router, me.router, friends.router, habits.router, stats.router,
-                   articles.router, sos.router, legal.router):
+                   articles.router, sos.router, legal.router, ratings.router, community.router):
         app.include_router(router)
 
     @app.get("/health", tags=["service"])

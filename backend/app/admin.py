@@ -1,4 +1,4 @@
-"""Админка SQLAdmin на /admin: статьи, шаблоны привычек, блокировка пользователей.
+"""Админка SQLAdmin на /admin: статьи, шаблоны привычек, блокировка пользователей, модерация ленты.
 
 Включается, когда задан ADMIN_PASSWORD. Если SQLAdmin не удалось подключить (например,
 несовместимая версия), сервер всё равно запускается, а в журнале будет предупреждение.
@@ -25,7 +25,7 @@ def setup_admin(app: FastAPI) -> None:
         from sqladmin.authentication import AuthenticationBackend
         from starlette.requests import Request
 
-        from app.models import Article, HabitTemplate, User
+        from app.models import Article, HabitTemplate, PartnerPost, PostResponse, Report, User
 
         class AdminAuth(AuthenticationBackend):
             async def login(self, request: Request) -> bool:
@@ -87,6 +87,37 @@ def setup_admin(app: FastAPI) -> None:
             column_details_list = [User.id, User.name, User.email, User.is_banned, User.created_at]
             form_columns = [User.is_banned]  # только блокировка; личные данные не правим
 
+        class PostAdmin(ModelView, model=PartnerPost):
+            name, name_plural = "Объявление", "Объявления: поиск напарника"
+            icon = "fa-solid fa-people-arrows"
+            can_create = False
+            column_list = [
+                PartnerPost.id, PartnerPost.topic, PartnerPost.text, PartnerPost.status,
+                PartnerPost.age_group, PartnerPost.created_at,
+            ]
+            column_searchable_list = [PartnerPost.text, PartnerPost.topic]
+            column_default_sort = [(PartnerPost.id, True)]
+            # модератор меняет только статус: open (показать), hidden (скрыть), closed (закрыть)
+            form_columns = [PartnerPost.status]
+
+        class ResponseAdmin(ModelView, model=PostResponse):
+            name, name_plural = "Отклик", "Отклики"
+            icon = "fa-solid fa-comments"
+            can_create = False
+            column_list = [PostResponse.id, PostResponse.post_id, PostResponse.text, PostResponse.status]
+            column_default_sort = [(PostResponse.id, True)]
+            form_columns = [PostResponse.status]  # pending, accepted, declined, hidden
+
+        class ReportAdmin(ModelView, model=Report):
+            name, name_plural = "Жалоба", "Жалобы"
+            icon = "fa-solid fa-flag"
+            can_create = False
+            column_list = [
+                Report.id, Report.target_type, Report.target_id, Report.reason, Report.status, Report.created_at,
+            ]
+            column_default_sort = [(Report.id, True)]
+            form_columns = [Report.status]  # new или done: пометить разобранной
+
         admin = Admin(
             app,
             engine,
@@ -96,6 +127,9 @@ def setup_admin(app: FastAPI) -> None:
         admin.add_view(ArticleAdmin)
         admin.add_view(TemplateAdmin)
         admin.add_view(UserAdmin)
+        admin.add_view(ReportAdmin)
+        admin.add_view(PostAdmin)
+        admin.add_view(ResponseAdmin)
         log.info("Админка доступна на /admin")
     except Exception:
         log.exception("Не удалось подключить админку, продолжаем без неё")

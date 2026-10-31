@@ -247,7 +247,7 @@ def list_nudges(user: CurrentUser, db: DB):
         NudgeOut(
             id=n.id,
             habit_id=n.habit_id,
-            habit_title=n.habit.title,
+            habit_title=n.habit.title if n.habit else None,
             sender=person_out(n.sender) if n.sender else None,
             text=n.text,
             kind=n.kind,

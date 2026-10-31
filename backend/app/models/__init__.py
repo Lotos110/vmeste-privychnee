@@ -1,5 +1,6 @@
 """Импорт всех моделей в одном месте, чтобы Alembic и create_all видели все таблицы."""
 
+from app.models.community import PartnerPost, PostResponse, Report, UserBlock
 from app.models.habit import (
     Article,
     CheckIn,
@@ -18,5 +19,9 @@ __all__ = [
     "HabitMember",
     "HabitTemplate",
     "Nudge",
+    "PartnerPost",
+    "PostResponse",
+    "Report",
     "User",
+    "UserBlock",
 ]

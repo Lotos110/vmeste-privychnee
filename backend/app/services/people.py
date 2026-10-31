@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.models import CheckIn, Friendship, HabitMember, User
 from app.schemas.user import MeOut, PersonOut
 from app.services import timeutil
+from app.services.age import community_access
 from app.services.streaks import activity_streaks
 
 # Без похожих символов: нет 0/O и 1/I. 32 символа в 8 позициях — больше триллиона кодов.
@@ -75,4 +76,6 @@ def build_me(db: Session, user: User) -> MeOut:
         habits_count=habits_count or 0,
         streak=streak,
         best_streak=best,
+        is_public=bool(user.is_public),
+        community=community_access(user),
     )

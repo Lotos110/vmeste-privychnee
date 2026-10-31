@@ -164,11 +164,11 @@ class NudgeIn(BaseModel):
 
 class NudgeOut(BaseModel):
     id: int
-    habit_id: int
-    habit_title: str
+    habit_id: int | None = None  # None — сообщение из ленты «Поиск напарника»
+    habit_title: str | None = None
     sender: PersonOut | None = None  # None — напоминание от приложения
     text: str
-    kind: Literal["partner", "reminder", "risk"]
+    kind: Literal["partner", "reminder", "risk", "response", "accepted"]
     created_at: datetime
     read: bool
 

@@ -29,6 +29,9 @@ class MeOut(BaseModel):
     habits_count: int = 0
     streak: int = 0
     best_streak: int = 0
+    is_public: bool = False  # участвует в общем рейтинге
+    # доступ к ленте «Поиск напарника» и общему рейтингу: ok | need_birth_date | too_young (меньше 12 лет)
+    community: Literal["ok", "need_birth_date", "too_young"] = "need_birth_date"
 
 
 class MeUpdate(BaseModel):
@@ -38,6 +41,7 @@ class MeUpdate(BaseModel):
     birth_date: date | None = None
     gender: Literal["female", "male"] | None = None
     timezone: str | None = None
+    is_public: bool | None = None
 
     @field_validator("name", "last_name", "bio")
     @classmethod
