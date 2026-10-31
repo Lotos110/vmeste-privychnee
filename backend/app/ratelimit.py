@@ -55,3 +55,6 @@ def reset_all() -> None:
 login_limiter = RateLimiter(10, 300, "Слишком много попыток входа")
 register_limiter = RateLimiter(10, 3600, "Слишком много регистраций")
 code_limiter = RateLimiter(20, 600, "Слишком много запросов по коду")
+reset_limiter = RateLimiter(10, 900, "Слишком много попыток восстановления")
+reset_email_limiter = RateLimiter(8, 3600, "Слишком много попыток восстановления для этого адреса")
+recovery_code_limiter = RateLimiter(10, 900, "Слишком много запросов нового кода")

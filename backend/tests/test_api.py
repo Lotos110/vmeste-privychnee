@@ -50,6 +50,63 @@ def test_register_login_refresh_logout(client):
     assert client.post("/auth/refresh", json={"refresh_token": data["refresh_token"]}).status_code == 401
 
 
+def test_recovery_code_and_password_reset(client):
+    body = {"email": "anna@example.com", "password": "password123", "name": "Анна"}
+    registered = client.post("/auth/register", json=body).json()
+    code = registered["recovery_code"]
+    assert len(code) == 14 and code.count("-") == 2  # K7M2-QX9R-4TPD
+    # вход и обновление токена кода не возвращают: он показывается один раз
+    login = client.post("/auth/login", json={"email": "anna@example.com", "password": "password123"}).json()
+    assert login["recovery_code"] is None
+
+    reset = {
+        "email": "ANNA@example.com",
+        "recovery_code": code.lower().replace("-", " "),  # регистр, пробелы и дефисы не важны
+        "new_password": "new-password-456",
+    }
+    assert client.post("/auth/reset-password", json={**reset, "recovery_code": "WRONG-CODE-0000"}).status_code == 400
+    assert client.post("/auth/reset-password", json={**reset, "email": "nobody@example.com"}).status_code == 400
+    done = client.post("/auth/reset-password", json=reset)
+    assert done.status_code == 200
+    new_code = done.json()["recovery_code"]
+    assert new_code and new_code != code
+
+    # старый пароль и старые токены больше не работают, новый пароль работает
+    assert client.post("/auth/login", json={"email": "anna@example.com", "password": "password123"}).status_code == 401
+    assert client.post("/auth/login", json={"email": "anna@example.com", "password": "new-password-456"}).status_code == 200
+    old_headers = {"Authorization": f"Bearer {registered['access_token']}"}
+    assert client.get("/me", headers=old_headers).status_code == 401
+    # использованный код сгорел
+    assert client.post("/auth/reset-password", json=reset).status_code == 400
+
+
+def test_new_recovery_code_needs_password(register, client):
+    anna = register("anna@example.com")  # пароль password123
+    assert anna.post("/auth/recovery-code", {"password": "wrong-password"}).status_code == 403
+    first = anna.post("/auth/recovery-code", {"password": "password123"})
+    assert first.status_code == 200
+    second = anna.post("/auth/recovery-code", {"password": "password123"}).json()["recovery_code"]
+    assert second != first.json()["recovery_code"]
+
+    reset = {"email": "anna@example.com", "new_password": "another-pass-123"}
+    assert client.post(
+        "/auth/reset-password", json={**reset, "recovery_code": first.json()["recovery_code"]}
+    ).status_code == 400  # прежний код заменён новым
+    assert client.post("/auth/reset-password", json={**reset, "recovery_code": second}).status_code == 200
+
+
+def test_reset_without_recovery_code_is_rejected(register, client):
+    register("anna@example.com")
+    with SessionLocal() as db:  # аккаунт, созданный до появления кодов восстановления
+        db.query(User).update({"recovery_hash": None})
+        db.commit()
+    response = client.post(
+        "/auth/reset-password",
+        json={"email": "anna@example.com", "recovery_code": "ABCD-EFGH-JKLM", "new_password": "another-pass-123"},
+    )
+    assert response.status_code == 400
+
+
 def test_requires_auth(client):
     assert client.get("/me").status_code == 401
     assert client.get("/habits").status_code == 401

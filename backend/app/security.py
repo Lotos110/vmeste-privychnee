@@ -28,6 +28,21 @@ def verify_password(password: str, password_hash: str | None) -> bool:
         return False
 
 
+# Код восстановления: 12 символов без похожих 0/O и 1/I, показывается как K7M2-QX9R-4TPD.
+RECOVERY_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+RECOVERY_LENGTH = 12
+
+
+def generate_recovery_code() -> str:
+    raw = "".join(secrets.choice(RECOVERY_ALPHABET) for _ in range(RECOVERY_LENGTH))
+    return "-".join(raw[i : i + 4] for i in range(0, RECOVERY_LENGTH, 4))
+
+
+def normalize_recovery_code(code: str) -> str:
+    """Дефисы, пробелы и регистр не важны: K7M2 qx9r-4tpd == K7M2-QX9R-4TPD."""
+    return "".join(ch for ch in code.upper() if ch.isalnum())
+
+
 def create_token(user_id: int, token_type: str, token_version: int) -> str:
     settings = get_settings()
     lifetime = (

@@ -21,6 +21,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(254), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
+    # хэш кода восстановления пароля (сам код показывается один раз); у старых аккаунтов пусто
+    recovery_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     name: Mapped[str] = mapped_column(String(60))
     last_name: Mapped[str | None] = mapped_column(String(60), nullable=True)
     bio: Mapped[str | None] = mapped_column(String(300), nullable=True)

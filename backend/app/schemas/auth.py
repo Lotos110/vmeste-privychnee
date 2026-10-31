@@ -36,8 +36,24 @@ class RefreshIn(BaseModel):
     refresh_token: str
 
 
+class ResetPasswordIn(BaseModel):
+    email: EmailStr
+    recovery_code: str = Field(min_length=8, max_length=64)
+    new_password: str = Field(min_length=8, max_length=128)
+
+
+class PasswordConfirmIn(BaseModel):
+    password: str = Field(min_length=1, max_length=128)
+
+
+class RecoveryCodeOut(BaseModel):
+    recovery_code: str
+
+
 class TokenOut(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
     user: MeOut
+    # новый код восстановления: приходит только при регистрации и сбросе пароля и показывается один раз
+    recovery_code: str | None = None
