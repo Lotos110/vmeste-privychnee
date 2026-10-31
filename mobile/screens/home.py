@@ -9,7 +9,7 @@ from api import ApiError
 from components import common as ui
 from components.carousel import Carousel, banner
 from components.habit_card import habit_card
-from core import Screen
+from core import TAB_PROFILE, TAB_RATING, TAB_SEARCH, Screen
 
 # порядок на главной: ждущие отметки сверху, затем «сегодня отдых», выполненные ниже
 _STATUS_ORDER = {"pending": 0, "missed": 0, "off": 1, "done": 2}
@@ -121,7 +121,7 @@ class HomeScreen(Screen):
             )
         avatar = ft.Container(
             content=ui.avatar(app, me["name"], me.get("avatar_url"), 20),
-            on_click=lambda e: app.open_tab(2),
+            on_click=lambda e: app.open_tab(TAB_PROFILE),
             tooltip="Профиль",
         )
         return ft.Row(
@@ -290,10 +290,16 @@ class HomeScreen(Screen):
             banner(images + "sos.png", "Тишка рядом", "Тяжело или сорвались? Поддержим без осуждения",
                    "Заглянуть", lambda e: app.push(SosScreen(app)), theme.PRIMARY),
         ))
+        if me.get("community") != "too_young":  # поиск напарника доступен с 12 лет
+            slides.append((
+                "search",
+                banner(images + "search.png", "Найди напарника", "Объявления тех, кто тоже хочет начать",
+                       "Открыть", lambda e: app.open_tab(TAB_SEARCH), theme.BLUE),
+            ))
         slides.append((
-            "soon",
-            banner(images + "soon.png", "Скоро: поиск друзей", "Находите напарников с похожими целями",
-                   "Скоро"),
+            "rating",
+            banner(images + "rating.png", "Рейтинг", "Серии и недели: соревнуйтесь с друзьями",
+                   "Смотреть", lambda e: app.open_tab(TAB_RATING), theme.ORANGE),
         ))
 
         # что нужнее прямо сейчас — первым: после срыва Тишка, без друзей приглашение

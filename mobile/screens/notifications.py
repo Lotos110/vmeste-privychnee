@@ -12,6 +12,8 @@ KIND_ICONS = {
     "partner": ("FAVORITE", theme.PRIMARY_SOFT, theme.PRIMARY),
     "reminder": ("ALARM", theme.BLUE_SOFT, theme.BLUE),
     "risk": ("LOCAL_FIRE_DEPARTMENT", theme.ORANGE_SOFT, theme.ORANGE),
+    "response": ("CHAT_BUBBLE_OUTLINE", theme.GREEN_SOFT, theme.GREEN),  # отклик на объявление в «Поиске»
+    "accepted": ("GROUP_ADD", theme.GREEN_SOFT, theme.GREEN),  # автор принял ваш отклик
 }
 
 
@@ -26,6 +28,19 @@ def format_moment(iso: str) -> str:
 class NotificationsScreen(Screen):
     title = "Напоминания"
 
+    def _opener(self, nudge: dict):
+        """Отклик на объявление открывает «Мои объявления», принятый отклик ведёт к друзьям."""
+        app = self.app
+        if nudge["kind"] == "response":
+            from screens.feed import MyPostsScreen
+
+            return lambda e: app.push(MyPostsScreen(app))
+        if nudge["kind"] == "accepted":
+            from screens.friends import FriendsScreen
+
+            return lambda e: app.push(FriendsScreen(app))
+        return None
+
     def body(self):
         api = self.app.api
         nudges = api.get("/nudges")
@@ -38,6 +53,7 @@ class NotificationsScreen(Screen):
         for nudge in nudges:
             icon_name, bg, fg = KIND_ICONS.get(nudge["kind"], KIND_ICONS["partner"])
             sender = nudge["sender"]["name"] if nudge.get("sender") else "Вместе привычнее"
+            where = f" · «{nudge['habit_title']}»" if nudge.get("habit_title") else ""
             controls.append(
                 ui.card(
                     ft.Row(
@@ -46,7 +62,7 @@ class NotificationsScreen(Screen):
                             ft.Column(
                                 [
                                     ui.txt(nudge["text"], 14, ui.W_SEMI if not nudge["read"] else None),
-                                    ui.muted(f"{sender} · «{nudge['habit_title']}» · {format_moment(nudge['created_at'])}", 11),
+                                    ui.muted(f"{sender}{where} · {format_moment(nudge['created_at'])}", 11),
                                 ],
                                 spacing=2,
                                 expand=True,
@@ -57,6 +73,7 @@ class NotificationsScreen(Screen):
                     padding=12,
                     bgcolor=theme.CARD if nudge["read"] else theme.PRIMARY_SOFT,
                     radius=16,
+                    on_click=self._opener(nudge),
                 )
             )
         controls.append(ui.spacer(8))

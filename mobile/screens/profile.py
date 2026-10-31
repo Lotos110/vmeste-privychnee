@@ -7,17 +7,18 @@ import flet as ft
 import theme
 from components import common as ui
 from components.date_input import DateInput
-from core import Screen
+from core import TAB_PROFILE, Screen
 
 
 class ProfileScreen(Screen):
-    tab_index = 2
+    tab_index = TAB_PROFILE
 
     def body(self):
         app, api = self.app, self.app.api
         me = api.get("/me")
         app.me = me
 
+        from screens.feed import BlockedScreen
         from screens.friends import FriendsScreen
         from screens.notifications import NotificationsScreen
         from screens.recovery import RecoveryCodeScreen
@@ -84,8 +85,11 @@ class ProfileScreen(Screen):
                         "Сообщения от напарников", theme.BLUE, theme.BLUE_SOFT),
             ui.menu_row("", "Тишка", lambda e: app.push(SosScreen(app)), "SOS-помощник: если трудно или сорвались",
                         art="tishka_smile"),
+            ui.menu_row("BLOCK", "Заблокированные", lambda e: app.push(BlockedScreen(app)),
+                        "Кого вы скрыли в поиске напарника", theme.RED, theme.RED_SOFT),
             ui.menu_row("VPN_KEY", "Код восстановления", lambda e: self.recovery_dialog(RecoveryCodeScreen),
                         "Если забудете пароль", theme.GREEN, theme.GREEN_SOFT),
+            self._rating_card(me),
             ui.spacer(4),
             ui.soft_button("Редактировать профиль", lambda e: app.push(EditProfileScreen(app, me))),
             ui.danger_button("Выйти", lambda e: app.confirm("Выйти из аккаунта?", "Вы сможете войти снова в любой момент.",
@@ -94,6 +98,58 @@ class ProfileScreen(Screen):
         ]
         return controls
 
+
+    def _rating_card(self, me: dict) -> ft.Control:
+        """Переключатель участия в общем рейтинге. Нужна дата рождения: раздел с 12 лет."""
+        app = self.app
+        access = me.get("community")
+        if access == "too_young":
+            return ft.Container()  # общего рейтинга и поиска для младших нет, показывать нечего
+        if access != "ok":
+            return ui.card(
+                ft.Column(
+                    [
+                        ui.txt("Общий рейтинг и поиск напарника", 15, ui.W_SEMI),
+                        ui.muted("Эти разделы открыты с 12 лет. Укажите дату рождения: она нужна только для проверки "
+                                 "возраста и никому не видна.", 12),
+                        ui.small_button("Указать дату рождения", lambda e: app.push(EditProfileScreen(app, me))),
+                    ],
+                    spacing=8,
+                ),
+                padding=14,
+                radius=16,
+            )
+
+        def change(e) -> None:
+            def save() -> None:
+                app.me = app.api.patch("/me", {"is_public": bool(e.control.value)})
+                app.toast("Вы участвуете в общем рейтинге" if app.me["is_public"] else "Вы скрыты из общего рейтинга")
+
+            try:
+                app.guard(save)()
+            finally:
+                self.refresh()  # показываем фактическое состояние, даже если сервер отказал
+
+        return ui.card(
+            ft.Row(
+                [
+                    ft.Column(
+                        [
+                            ui.txt("Участвовать в общем рейтинге", 15, ui.W_SEMI),
+                            ui.muted("Другие увидят ваше имя и аватар. Только люди вашей возрастной группы. "
+                                     "Выключить можно в любой момент.", 12),
+                        ],
+                        spacing=2,
+                        expand=True,
+                    ),
+                    ft.Switch(value=bool(me.get("is_public")), active_color=theme.PRIMARY, on_change=change),
+                ],
+                spacing=10,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
+            padding=14,
+            radius=16,
+        )
 
     def recovery_dialog(self, code_screen) -> None:
         """Создаёт новый код восстановления (нужен пароль); прежний код после этого перестаёт работать."""

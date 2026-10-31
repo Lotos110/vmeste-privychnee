@@ -11,18 +11,29 @@ from components import common as ui
 
 log = logging.getLogger("vmeste")
 
+# Вкладки нижнего меню. Номер вкладки (tab_index у экрана, аргумент open_tab) — место в этом списке:
+# 0 Главная, 1 Поиск, 2 Рейтинг, 3 Статьи, 4 Профиль.
+TAB_HOME, TAB_SEARCH, TAB_RATING, TAB_ARTICLES, TAB_PROFILE = range(5)
 TABS = [
     ("Главная", "HOME_OUTLINED", "HOME"),
+    ("Поиск", "PEOPLE_OUTLINE", "PEOPLE"),
+    ("Рейтинг", "EMOJI_EVENTS_OUTLINED", "EMOJI_EVENTS"),
     ("Статьи", "ARTICLE_OUTLINED", "ARTICLE"),
     ("Профиль", "PERSON_OUTLINE", "PERSON"),
 ]
+
+
+def visible_tabs(me: dict | None) -> list[int]:
+    """Номера вкладок, которые видит человек: «Поиск» скрыт для младше 12 лет (раздел с 12)."""
+    hidden = {TAB_SEARCH} if me and me.get("community") == "too_young" else set()
+    return [i for i in range(len(TABS)) if i not in hidden]
 
 
 class Screen:
     """Экран = View + загрузка данных. Наследник переопределяет body()."""
 
     title = ""
-    tab_index: int | None = None  # у корневых вкладок: 0 — главная, 1 — статьи, 2 — профиль
+    tab_index: int | None = None  # у корневых вкладок: их номер в TABS
     show_appbar = True
     refresh_on_return = True  # перезагружать данные, когда пользователь вернулся на экран
 
@@ -84,16 +95,20 @@ class Screen:
     def _build_nav(self):
         if self.tab_index is None:
             return None
+        shown = visible_tabs(self.app.me)
+        if self.tab_index not in shown:
+            shown.append(self.tab_index)
+            shown.sort()
         return ft.NavigationBar(
-            selected_index=self.tab_index,
+            selected_index=shown.index(self.tab_index),
             bgcolor=theme.CARD,
             indicator_color=theme.PRIMARY_SOFT,
-            on_change=lambda e: self.app.open_tab(int(e.control.selected_index)),
+            on_change=lambda e: self.app.open_tab(shown[int(e.control.selected_index)]),
             destinations=[
                 ft.NavigationBarDestination(
-                    icon=ui.icon(outlined), selected_icon=ui.icon(filled), label=label
+                    icon=ui.icon(TABS[i][1]), selected_icon=ui.icon(TABS[i][2]), label=TABS[i][0]
                 )
-                for label, outlined, filled in TABS
+                for i in shown
             ],
         )
 
@@ -186,10 +201,12 @@ class App:
 
     def open_tab(self, index: int) -> None:
         from screens.articles import ArticlesScreen
+        from screens.feed import FeedScreen
         from screens.home import HomeScreen
         from screens.profile import ProfileScreen
+        from screens.rating import RatingScreen
 
-        screens = [HomeScreen, ArticlesScreen, ProfileScreen]
+        screens = [HomeScreen, FeedScreen, RatingScreen, ArticlesScreen, ProfileScreen]
         self.show_root(screens[index](self))
 
     def push(self, screen: Screen) -> None:

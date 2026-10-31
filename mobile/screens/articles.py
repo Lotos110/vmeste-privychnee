@@ -6,7 +6,7 @@ import theme
 from api import ApiError
 from components import common as ui
 from components.habit_card import category_colors
-from core import Screen
+from core import TAB_ARTICLES, Screen
 
 CATEGORIES = ["sleep", "nutrition", "sport", "water", "productivity", "mental", "relapse"]
 
@@ -85,7 +85,7 @@ class ArticlesScreen(Screen):
     def __init__(self, app, as_page: bool = False):
         self.category: str | None = None
         if not as_page:
-            self.tab_index = 1  # переопределяем атрибут класса только у этого экземпляра
+            self.tab_index = TAB_ARTICLES  # переопределяем атрибут класса только у этого экземпляра
         super().__init__(app)
 
     def body(self):

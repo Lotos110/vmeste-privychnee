@@ -27,6 +27,8 @@ SIZES = {
     "books": (480, 480),
     "friends": (480, 480),
     "bell": (480, 480),
+    "search": (480, 480),
+    "trophy": (480, 480),
     "tishka_smile": (510, 420),
     "tishka_calm": (510, 420),
 }
@@ -37,6 +39,8 @@ BANNER_ART = {
     "habit": ("#27976A", "#7FD7A8", "sprout"),
     "friends": ("#F07422", "#FDBF86", "friends"),
     "sos": ("#5B4BDD", "#A395F7", "tishka_smile"),
+    "search": ("#3F6FE0", "#8FB6FF", "search"),
+    "rating": ("#E0832A", "#F9C77A", "trophy"),
 }
 BANNER_W, BANNER_H = 720, 360
 
